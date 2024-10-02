@@ -17,9 +17,15 @@ float3 GetLighting (Surface surfaceWS, BRDF brdf, GI gi) {
 	float3 reflection = gi.specular * brdf.specular;
 	reflection /= (brdf.roughness  * brdf.roughness + 1);
 	float3 color = (gi.diffuse * brdf.diffuse + reflection) * surfaceWS.occlusion;
+
 	for (int i = 0; i < GetDirectionalLightCount(); i++) {
 		Light light = GetDirectionalLight(i, surfaceWS, shadowData);
 		color += GetLighting(surfaceWS, brdf, light);
+	}
+
+	for (int i = 0; i < GetOtherLightCount(); i++) {
+		Light Otherlight = GetOtherLight(i, surfaceWS, shadowData);
+		color += GetLighting(surfaceWS, brdf, Otherlight);
 	}
 	return color;
 }
