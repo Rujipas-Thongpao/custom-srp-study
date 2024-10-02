@@ -10,5 +10,11 @@ obj
 ApiUpdaterCheck.txt
 .vsconfig
 *.dwlt
-
 UserSettings/
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
