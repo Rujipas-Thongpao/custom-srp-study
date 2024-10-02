@@ -80,7 +80,6 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	Surface surface;
 	surface.position = input.positionWS;
 	surface.normal = NormalTangentToWorld( GetNormalTS(input.baseUV,input.detailUV), input.normalWS, input.tangentWS);
-	// surface.normal = GetNormalTS(input.baseUV);
 	surface.viewDirection = normalize(_WorldSpaceCameraPos - input.positionWS);
 	surface.depth = -TransformWorldToView(input.positionWS).z;
 	surface.occlusion = GetOcclusion(input.baseUV);
@@ -96,7 +95,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	#endif
 	GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
 	float3 color = GetLighting(surface, brdf, gi);
-	// color += GetEmission(input.baseUV);
+	 color += GetEmission(input.baseUV);
 	return float4(color, surface.alpha);
 }
 

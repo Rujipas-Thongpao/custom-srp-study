@@ -88,14 +88,11 @@ float3 GetNormalTS (float2 baseUV, float2 detailUV = 0.0) {
     float4 map = SAMPLE_TEXTURE2D(_NormalMap, sampler_BaseMap, baseUV);
     float scale = INPUT_Prop(_NormalScale);
     float3 normal = DecodeNormal(map, scale);
-
-    float4 detailMap = SAMPLE_TEXTURE2D(_DetailNormalMap, sampler_BaseMap, baseUV);
-    float4 detailScale = INPUT_Prop(_DetailNormalScale) * GetMask(baseUV).b;
-    float3 detail = DecodeNormal(detailMap, detailScale);
-
+    map = SAMPLE_TEXTURE2D(_DetailNormalMap, sampler_DetailMap, detailUV);
+    scale = INPUT_Prop(_DetailNormalScale) * GetMask(baseUV).b;
+    float3 detail = DecodeNormal(map, scale);
     normal = BlendNormalRNM(normal, detail);
-    
-    return map.xyz;
+    return normal;
 }
 
 float4 GetBaseDetail(float2 baseUV, float2 detailUV = 0.0){

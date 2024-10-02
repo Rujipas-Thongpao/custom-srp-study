@@ -7,6 +7,7 @@
 		// Normal map
 		[NoScaleOffset] _NormalMap("Normals", 2D) = "bump" {}
 		_NormalScale("Normal Scale", Range(0, 1)) = 1
+
 		// Detail normal map
 		[NoScaleOffset] _DetailNormalMap("Detail Normals", 2D) = "bump" {}
 		_DetailNormalScale("Detail Normal Scale", Range(0, 1)) = 1
