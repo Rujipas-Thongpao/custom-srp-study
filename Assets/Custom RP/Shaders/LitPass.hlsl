@@ -71,7 +71,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 
 	ClipLOD(input.positionCS, unity_LODFade.x);
 	
-	float4 base = GetBaseDetail(input.baseUV, input.detailUV);
+	float4 base = GetBase(input.baseUV);
 	#if defined(_CLIPPING)
 		clip(base.a - GetCutoff(input.baseUV));
 	#endif
@@ -95,7 +95,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	#endif
 	GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
 	float3 color = GetLighting(surface, brdf, gi);
-	 color += GetEmission(input.baseUV);
+	color += GetEmission(input.baseUV);
 	return float4(color, surface.alpha);
 }
 
