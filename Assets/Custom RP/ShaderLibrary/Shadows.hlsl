@@ -45,6 +45,11 @@ struct ShadowData {
 	ShadowMask shadowMask;
 };
 
+struct OtherShadowData{
+	float strength;
+	int shadowMaskChannel;
+};
+
 float FadedShadowStrength (float distance, float scale, float fade) {
 	return saturate((1.0 - distance * scale) * fade);
 }
@@ -210,6 +215,19 @@ float GetDirectionalShadowAttenuation (
 
 
 	// return lerp(1.0, shadow, directional.strength);
+}
+
+
+float GetOtherShadowAttenuation( OtherShadowData other, ShadowData global, Surface surefaceWS){
+	#if !defined(_RECEIVE_SHADOWS)
+		return 1.0;
+	#endif
+
+	float shadow;
+	shadow = GetBakedShadow(
+		global.shadowMask, other.shadowMaskChannel, other.strength
+	);
+	return shadow;
 }
 
 #endif

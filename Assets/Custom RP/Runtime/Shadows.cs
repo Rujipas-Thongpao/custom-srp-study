@@ -72,6 +72,26 @@ public class Shadows
         buffer.ReleaseTemporaryRT(dirShadowAtlasId);
         ExecuteBuffer();
     }
+    public Vector4 ReserveOtherShadows(Light light, int visibleLightIndex)
+    {
+        if (light.shadows != LightShadows.None && light.shadowStrength > 0f)
+        {
+
+            LightBakingOutput lightBakingOutput = light.bakingOutput;
+            if (
+                lightBakingOutput.lightmapBakeType == LightmapBakeType.Mixed
+                && lightBakingOutput.mixedLightingMode == MixedLightingMode.Shadowmask
+            )
+            {
+                useShadowMask = true;
+                return new Vector4(light.shadowStrength, 0f, 0f, lightBakingOutput.occlusionMaskChannel);
+            }
+
+
+        }
+        return new Vector4(0, 0, 0, -1);
+
+    }
 
     public Vector4 ReserveDirectionalShadows(Light light, int visibleLightIndex)
     {
