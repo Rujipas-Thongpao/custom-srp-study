@@ -74,6 +74,8 @@ struct OtherShadowData{
 	float strength;
 	int tileIndex;
 	int shadowMaskChannel;
+	float3 lightPositionWS;
+	float3 spotDirectionWS;
 };
 
 
@@ -232,7 +234,10 @@ float GetCascadedShadow(
 // Per-fragment
 float GetOtherShadow(OtherShadowData other, ShadowData global, Surface surfaceWS){
 	float4 tileData = _OtherShadowTiles[other.tileIndex];
-	float3 normalBias = surfaceWS.normal * tileData.w;
+	float3 surfaceToLight = other.lightPositionWS - surfaceWS.position;
+	float distanceToLightPlane = dot(surfaceToLight, other.spotDirectionWS);
+
+	float3 normalBias = surfaceWS.normal * (distanceToLightPlane * tileData.w);
 	float4 positionSTS = mul(_OtherShadowMatrices[other.tileIndex], float4(surfaceWS.position + normalBias, 1.0));
 	return FilterOtherShadow(positionSTS.xyz/ positionSTS.w);
 }
