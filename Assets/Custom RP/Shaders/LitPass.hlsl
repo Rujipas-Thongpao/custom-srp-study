@@ -71,7 +71,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 
 	ClipLOD(input.positionCS, unity_LODFade.x);
 	
-	float4 base = GetBase(input.baseUV);
+	float4 base = GetBase(input.baseUV , input.detailUV);
 	#if defined(_CLIPPING)
 		clip(base.a - GetCutoff(input.baseUV));
 	#endif

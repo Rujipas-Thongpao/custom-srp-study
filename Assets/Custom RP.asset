@@ -13,11 +13,14 @@ MonoBehaviour:
   m_Name: Custom RP
   m_EditorClassIdentifier: 
   useDynamicBatching: 0
-  useGPUInstancing: 1
-  useSRPBatcher: 1
+  useGPUInstancing: 0
+  useSRPBatcher: 0
   shadows:
-    maxDistance: 22
-    distanceFade: 0.158
+    maxDistance: 30
+    distanceFade: 0.1
+    other:
+      atlasSize: 4096
+      filter: 2
     directional:
       atlasSize: 4096
       filter: 2
