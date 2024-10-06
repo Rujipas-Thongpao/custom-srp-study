@@ -15,11 +15,11 @@ TEXTURE2D(_DetailNormalMap);
 
 UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseMap_ST)
-    UNITY_DEFINE_INSTANCED_PROP(float4, _NormalScale)
-    UNITY_DEFINE_INSTANCED_PROP(float4, _DetailNormalScale)
+    UNITY_DEFINE_INSTANCED_PROP(float, _NormalScale)
     UNITY_DEFINE_INSTANCED_PROP(float4, _DetailMap_ST)
-    UNITY_DEFINE_INSTANCED_PROP(float1, _DetailAlbedo)
-    UNITY_DEFINE_INSTANCED_PROP(float1, _DetailSmoothness)
+    UNITY_DEFINE_INSTANCED_PROP(float, _DetailNormalScale)
+    UNITY_DEFINE_INSTANCED_PROP(float, _DetailAlbedo)
+    UNITY_DEFINE_INSTANCED_PROP(float, _DetailSmoothness)
     UNITY_DEFINE_INSTANCED_PROP(float4, _BaseColor)
     UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionColor)
     UNITY_DEFINE_INSTANCED_PROP(float, _OcclusionStrength)
@@ -46,11 +46,6 @@ float2 TransformBaseUV (float2 baseUV) {
     return baseUV * baseST.xy + baseST.zw;
 }
 
-float4 GetBase (float2 baseUV) {
-    float4 map = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, baseUV);
-    float4 color = INPUT_Prop( _BaseColor);
-    return map * color;
-}
 
 float2 TransformDetailUV (float2 detailUV) {
     float4 detailST = INPUT_Prop(_DetailMap_ST);
@@ -95,7 +90,7 @@ float3 GetNormalTS (float2 baseUV, float2 detailUV = 0.0) {
     return normal;
 }
 
-float4 GetBaseDetail(float2 baseUV, float2 detailUV = 0.0){
+float4 GetBase(float2 baseUV, float2 detailUV = 0.0){
     float4 map = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, baseUV);
     float4 mask = GetMask(baseUV).b; // get avaliable area for detail map
     float4 color = INPUT_Prop(_BaseColor);
