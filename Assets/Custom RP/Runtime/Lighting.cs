@@ -13,14 +13,13 @@ public class Lighting
         dirLightCountId = Shader.PropertyToID("_DirectionalLightCount"),
         dirLightColorsId = Shader.PropertyToID("_DirectionalLightColors"),
         dirLightDirectionsId = Shader.PropertyToID("_DirectionalLightDirections"),
-        dirLightShadowDataId =
-            Shader.PropertyToID("_DirectionalLightShadowData"),
-    otherLightCountId = Shader.PropertyToID("_OtherLightCount"),
-    otherLightColorsId = Shader.PropertyToID("_OtherLightColors"),
-    otherLightPositionsId = Shader.PropertyToID("_OtherLightPositions"),
-    otherLightDirectionsId = Shader.PropertyToID("_OtherLightDirections"),
-    otherLightAnglesId = Shader.PropertyToID("_OtherLightAngles"),
-    otherLightShadowDataId = Shader.PropertyToID("_OtherLightShadowData");
+        dirLightShadowDataId = Shader.PropertyToID("_DirectionalLightShadowData"),
+        otherLightCountId = Shader.PropertyToID("_OtherLightCount"),
+        otherLightColorsId = Shader.PropertyToID("_OtherLightColors"),
+        otherLightPositionsId = Shader.PropertyToID("_OtherLightPositions"),
+        otherLightDirectionsId = Shader.PropertyToID("_OtherLightDirections"),
+        otherLightAnglesId = Shader.PropertyToID("_OtherLightAngles"),
+        otherLightShadowDataId = Shader.PropertyToID("_OtherLightShadowData");
 
     static Vector4[]
         dirLightColors = new Vector4[maxDirLightCount],
