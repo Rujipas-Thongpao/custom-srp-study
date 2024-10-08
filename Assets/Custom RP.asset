@@ -19,7 +19,7 @@ MonoBehaviour:
     maxDistance: 29.9
     distanceFade: 0.1
     other:
-      atlasSize: 4096
+      atlasSize: 1024
       filter: 3
     directional:
       atlasSize: 2048

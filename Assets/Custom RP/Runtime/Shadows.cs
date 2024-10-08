@@ -322,15 +322,19 @@ public class Shadows
             out Matrix4x4 projectionMatrix, out ShadowSplitData splitData
         );
         shadowSettings.splitData = splitData;
+
+        Vector2 offset = SetTileViewport(index, split, tileSize);
+
         otherShadowMatrices[index] = ConvertToAtlasMatrix(
             projectionMatrix * viewMatrix,
-            SetTileViewport(index, split, tileSize), split
+            offset, split
         );
 
         float texelSize = 2f / (tileSize * projectionMatrix.m00);
         float filterSize = texelSize * ((float)settings.other.filter + 1f);
         float bias = light.normalBias * filterSize * 1.4142136f;
-        SetOtherTileData(index, bias);
+
+        SetOtherTileData(index, offset, 1 / split, bias);
         buffer.SetViewProjectionMatrices(viewMatrix, projectionMatrix);
         buffer.SetGlobalDepthBias(0f, light.slopeScaleBias);
         ExecuteBuffer();
@@ -412,9 +416,16 @@ public class Shadows
         return offset;
     }
 
-    void SetOtherTileData(int index, float bias)
+    void SetOtherTileData(int index, Vector2 offset, float scale, float bias)
     {
+        // atlasSize.w = 1/atlasSize for other Shadow
+        float border = atlasSizes.w * .5f;
         Vector4 data = Vector4.zero;
+        // xyz store the value of bounds and w store bias
+        data.x = offset.x * scale + border;
+        data.y = offset.y * scale + border;
+        data.z = scale - border - border;
+
         data.w = bias;
         otherShadowTiles[index] = data;
     }
