@@ -99,6 +99,6 @@ float4 GetBase(float2 baseUV, float2 detailUV = 0.0){
     float pushedColor = detail < 0.0 ? 0.0 : 1.0;
     map.rgb = lerp(sqrt(map.rgb), pushedColor, abs(detail));
     map.rgb *= map.rgb;
-    return map;
+    return map * color;
 }
 #endif
