@@ -25,8 +25,12 @@ public partial class PostFXStack
     public PostFXStack()
     {
         bloomPyramidId = Shader.PropertyToID("_BloomPyramid0");
-        for (int i = 0; i < MAX_BLOOM_PYRAMID_LEVELS; i++)
+        // times 2 because it have to be horizontal and verical
+        for (int i = 0; i < MAX_BLOOM_PYRAMID_LEVELS * 2; i++)
         {
+            // we can do this because Id is assign sequencially.
+            // meaning if we get bloomPyramidId + 1 the we'll get "_BloomPyramid1".
+            // Therefore, we only have to keep track the first one.
             Shader.PropertyToID("_BloomPyramid" + i);
         }
 
@@ -66,22 +70,27 @@ public partial class PostFXStack
         buffer.BeginSample("Bloom");
         PostFXSettings.BloomSettings bloom = settings.Bloom;
         int width = camera.pixelWidth / 2, height = camera.pixelHeight / 2;
-        int fromId = _sourceId, toId = bloomPyramidId;
+        int fromId = _sourceId, toId = bloomPyramidId + 1;
         RenderTextureFormat format = RenderTextureFormat.Default;
         int i;
         for (i = 0; i < bloom.maxIterations; i++)
         {
+            int midId = toId - 1;
             if (height < bloom.downscaleLimit || width < bloom.downscaleLimit)
             {
                 break;
             }
             buffer.GetTemporaryRT(
+                midId, width, height, 0, FilterMode.Bilinear, format
+            );
+            buffer.GetTemporaryRT(
                 toId, width, height, 0, FilterMode.Bilinear, format
             );
-            Draw(fromId, toId, Pass.BloomHorizontal);
+            Draw(fromId, midId, Pass.BloomHorizontal);
+            Draw(midId, toId, Pass.BloomVertical);
 
             fromId = toId;
-            toId += 1;
+            toId += 2;
             width /= 2;
             height /= 2;
         }
@@ -89,7 +98,9 @@ public partial class PostFXStack
 
         for (i -= 1; i >= 0; i--)
         {
-            buffer.ReleaseTemporaryRT(bloomPyramidId + i);
+            buffer.ReleaseTemporaryRT(fromId);
+            buffer.ReleaseTemporaryRT(fromId - 1);
+            fromId -= 2;
         }
 
         buffer.EndSample("Bloom");
