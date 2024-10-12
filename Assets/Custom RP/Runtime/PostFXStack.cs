@@ -78,13 +78,14 @@ public partial class PostFXStack
             buffer.GetTemporaryRT(
                 toId, width, height, 0, FilterMode.Bilinear, format
             );
-            Draw(fromId, toId, Pass.copy);
+            Draw(fromId, toId, Pass.BloomHorizontal);
+
             fromId = toId;
             toId += 1;
             width /= 2;
             height /= 2;
         }
-        Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.copy);
+        Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.copy); // render to camera
 
         for (i -= 1; i >= 0; i--)
         {
@@ -97,5 +98,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy
+    copy, BloomHorizontal, BloomVertical
 }
