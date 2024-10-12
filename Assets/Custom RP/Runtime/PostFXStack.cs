@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class PostFXStack
+public partial class PostFXStack
 {
     const string BUFFER_NAME = "FX stack";
     static int fxSourceId = Shader.PropertyToID("_PostFXSource");
@@ -22,7 +22,8 @@ public class PostFXStack
     {
         this.context = _context;
         this.camera = _camera;
-        this.settings = _settings;
+        this.settings = (this.camera.cameraType <= CameraType.SceneView) ? _settings : null;
+        ApplySceneViewState();
     }
 
     public void Render(int _sourceId)
