@@ -9,6 +9,8 @@ public class PostFXSettings : ScriptableObject
 
     [SerializeField] Shader shader;
     [System.NonSerialized] Material material;
+    [SerializeField] BloomSettings bloom = default;
+
 
     public Material Material
     {
@@ -22,6 +24,22 @@ public class PostFXSettings : ScriptableObject
             return material;
         }
     }
+
+    public BloomSettings Bloom => bloom;
+
+
+
+
+    [System.Serializable]
+    public struct BloomSettings
+    {
+        [Range(0f, 16f)]
+        public int maxIterations;
+
+        [Min(1f)]
+        public int downscaleLimit;
+    }
+
 
 
 

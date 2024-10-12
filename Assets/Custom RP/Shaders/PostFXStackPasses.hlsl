@@ -16,6 +16,7 @@ struct Varyings {
 
 Varyings DefaultPassVertex (uint vertexID : SV_VertexID) {
     Varyings output;
+    // This make 1 Triangle cover all screen space
     output.positionCS = float4(
 	vertexID <= 1 ? -1.0 : 3.0, // X coordinate
 	vertexID == 1 ? 3.0 : -1.0, // Y coordinate

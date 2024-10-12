@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: PostFXSettings
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: cbc99255fe86b594abc92295a73fe9c5, type: 3}
+  bloom:
+    maxIterations: 3
+    downscaleLimit: 1
