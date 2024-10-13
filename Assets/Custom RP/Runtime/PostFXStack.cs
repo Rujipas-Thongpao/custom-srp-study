@@ -7,7 +7,8 @@ public partial class PostFXStack
 {
     const string BUFFER_NAME = "FX stack";
     const int MAX_BLOOM_PYRAMID_LEVELS = 16;
-    static int fxSourceId = Shader.PropertyToID("_PostFXSource");
+    static int fxSourceId = Shader.PropertyToID("_PostFXSource"),
+               fxSourceId2 = Shader.PropertyToID("_PostFXSource2");
     CommandBuffer buffer = new CommandBuffer
     {
         name = BUFFER_NAME
@@ -93,21 +94,47 @@ public partial class PostFXStack
             toId += 2;
             width /= 2;
             height /= 2;
+            if (
+                bloom.maxIterations == 0 ||
+                height < bloom.downscaleLimit || width < bloom.downscaleLimit
+            )
+            {
+                Draw(_sourceId, BuiltinRenderTextureType.CameraTarget, Pass.copy);
+                buffer.EndSample("Bloom");
+                return;
+            }
         }
-        Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.copy); // render to camera
-
-        for (i -= 1; i >= 0; i--)
+        /*Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.copy); // render to camera*/
+        if (i > 1)
         {
-            buffer.ReleaseTemporaryRT(fromId);
+
             buffer.ReleaseTemporaryRT(fromId - 1);
-            fromId -= 2;
+            toId -= 5;
+
+
+            for (i -= 1; i > 0; i--)
+            {
+                buffer.SetGlobalTexture(fxSourceId2, toId + 1);
+                Draw(fromId, toId, Pass.BloomCombine);
+                buffer.ReleaseTemporaryRT(fromId);
+                buffer.ReleaseTemporaryRT(toId - 1);
+                fromId = toId;
+                toId -= 2;
+            }
+        }
+        else
+        {
+            buffer.ReleaseTemporaryRT(bloomPyramidId);
         }
 
+        buffer.SetGlobalTexture(fxSourceId2, _sourceId);
+        Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.BloomCombine);
+        buffer.ReleaseTemporaryRT(fromId);
         buffer.EndSample("Bloom");
     }
 }
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical
+    copy, BloomHorizontal, BloomVertical, BloomCombine
 }
