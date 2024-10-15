@@ -11,7 +11,8 @@ public partial class PostFXStack
                fxSourceId2 = Shader.PropertyToID("_PostFXSource2"),
                useBicubicId = Shader.PropertyToID("_useBicubic"),
                bloomPrefilterId = Shader.PropertyToID("_BloomPrefilter"),
-               bloomThresholdId = Shader.PropertyToID("_BloomThreshold");
+               bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
+               bloomIntensityId = Shader.PropertyToID("_BloomIntensity");
     CommandBuffer buffer = new CommandBuffer
     {
         name = BUFFER_NAME
@@ -79,6 +80,7 @@ public partial class PostFXStack
         Vector4 threshold = GetThreshold(bloom);
         buffer.SetGlobalVector(bloomThresholdId, threshold);
         buffer.SetGlobalInt(useBicubicId, bloom.useBicubic ? 1 : 0);
+        buffer.SetGlobalFloat(bloomIntensityId, bloom.intensity);
 
         RenderTextureFormat format = RenderTextureFormat.Default;
         int width = camera.pixelWidth / 2, height = camera.pixelHeight / 2;
@@ -120,7 +122,7 @@ public partial class PostFXStack
             width /= 2;
             height /= 2;
             if (
-                bloom.maxIterations == 0 ||
+                bloom.maxIterations == 0 || bloom.intensity <= 0f ||
                 height < bloom.downscaleLimit * 2 || width < bloom.downscaleLimit * 2
             )
             {

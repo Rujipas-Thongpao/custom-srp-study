@@ -7,6 +7,7 @@ TEXTURE2D(_PostFXSource2);
 SAMPLER(sampler_linear_clamp);
 bool _useBicubic;
 float4 _BloomThreshold;
+float _BloomIntensity;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 
@@ -117,7 +118,7 @@ float4 BloomCombinePassFragment(Varyings input) : SV_TARGET {
 	lowRes = GetSourceBicubic(input.screenUV).rgb;
     }
     float3 highRes = GetSource2(input.screenUV).rgb;
-    return float4(lowRes + highRes, 1.0);
+    return float4(lowRes * _BloomIntensity+ highRes, 1.0) ;
 }
 
 float3 ApplyBloomThreshold (float3 color) {
