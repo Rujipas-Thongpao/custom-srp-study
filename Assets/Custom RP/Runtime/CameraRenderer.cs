@@ -21,6 +21,7 @@ public partial class CameraRenderer
     Camera camera;
 
     CullingResults cullingResults;
+    bool allowHDR;
 
     Lighting lighting = new Lighting();
     PostFXStack postFXStack = new PostFXStack();
@@ -28,11 +29,12 @@ public partial class CameraRenderer
     public void Render(
         ScriptableRenderContext _context, Camera _camera,
         bool _useDynamicBatching, bool _useGPUInstancing,
-        ShadowSettings _shadowSettings, PostFXSettings _postFxSettings
+        ShadowSettings _shadowSettings, PostFXSettings _postFxSettings, bool _allowHDR
     )
     {
         this.context = _context;
         this.camera = _camera;
+        this.allowHDR = _allowHDR && camera.allowHDR;
 
         // Set up
         PrepareBuffer();
