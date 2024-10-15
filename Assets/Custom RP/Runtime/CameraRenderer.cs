@@ -48,7 +48,7 @@ public partial class CameraRenderer
         ExecuteBuffer();
 
         lighting.Setup(_context, cullingResults, _shadowSettings);
-        postFXStack.Setup(_context, _camera, _postFxSettings);
+        postFXStack.Setup(_context, _camera, _postFxSettings, _allowHDR);
         buffer.EndSample(SampleName);
         Setup();
 
@@ -89,7 +89,7 @@ public partial class CameraRenderer
 
             buffer.GetTemporaryRT(
                 frameBufferId, camera.pixelWidth, camera.pixelHeight, 32,
-                FilterMode.Bilinear, RenderTextureFormat.Default
+                FilterMode.Bilinear, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
             );
             buffer.SetRenderTarget(
                 frameBufferId,

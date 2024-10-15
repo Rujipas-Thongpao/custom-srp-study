@@ -22,6 +22,7 @@ public partial class PostFXStack
     PostFXSettings settings;
 
     int bloomPyramidId;
+    bool useHDR;
 
 
     public bool IsActive => settings != null;
@@ -41,8 +42,9 @@ public partial class PostFXStack
 
     }
 
-    public void Setup(ScriptableRenderContext _context, Camera _camera, PostFXSettings _settings)
+    public void Setup(ScriptableRenderContext _context, Camera _camera, PostFXSettings _settings, bool _useHDR)
     {
+        this.useHDR = _useHDR;
         this.context = _context;
         this.camera = _camera;
         this.settings = (this.camera.cameraType <= CameraType.SceneView) ? _settings : null;
@@ -82,7 +84,7 @@ public partial class PostFXStack
         buffer.SetGlobalInt(useBicubicId, bloom.useBicubic ? 1 : 0);
         buffer.SetGlobalFloat(bloomIntensityId, bloom.intensity);
 
-        RenderTextureFormat format = RenderTextureFormat.Default;
+        RenderTextureFormat format = useHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
         int width = camera.pixelWidth / 2, height = camera.pixelHeight / 2;
 
 
@@ -90,7 +92,7 @@ public partial class PostFXStack
         buffer.GetTemporaryRT(
             bloomPrefilterId, width, height, 0, FilterMode.Bilinear, format
         );
-        Draw(_sourceId, bloomPrefilterId, Pass.Prefilter); // draw source into prefilter
+        Draw(_sourceId, bloomPrefilterId, useHDR ? Pass.PrefilterFireflies : Pass.Prefilter); // draw source into prefilter
         width /= 2;
         height /= 2;
 
@@ -174,5 +176,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomCombine, Prefilter
+    copy, BloomHorizontal, BloomVertical, BloomCombine, Prefilter, PrefilterFireflies
 }

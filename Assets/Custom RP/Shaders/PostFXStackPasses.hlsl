@@ -10,6 +10,7 @@ float4 _BloomThreshold;
 float _BloomIntensity;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 
 float4 _PostFXSource_TexelSize; // texel Size of _PostFXSource which is assign by unity's black magic
 
@@ -135,6 +136,35 @@ float4 BloomPrefilterPassFragment (Varyings input) : SV_TARGET {
     float3 color = ApplyBloomThreshold(GetSource(input.screenUV).rgb);
     return float4(color, 1.0);
 }
+
+float4 BloomPrefilterFirefliesPassFragment (Varyings input) : SV_TARGET {
+    float3 color = 0.0;
+    float weightSum = 0.0;
+    float2 offsets[] = {
+	float2(0.,0.),
+	float2(-1.,-1.),
+	float2(0.,-1.),
+	float2(1.,-1.),
+	float2(-1.,0.),
+	float2(0.,0.),
+	float2(1.,0.),
+	float2(-1.,1.),
+	float2(0.,1.),
+	float2(1.,1.),
+    };
+
+
+    for(int i =0;i<9;i++){
+	float3 c = GetSource(input.screenUV + offsets[i] * GetSourceTexelSize().xy * 2.0).rgb;
+	c = ApplyBloomThreshold(c);
+	float w = 1.0/(Luminance(c) + 1.);
+	color += c * w;
+	weightSum += w;
+    }
+    color /= weightSum;
+    return float4(color, 1.0);
+}
+
 
 
 

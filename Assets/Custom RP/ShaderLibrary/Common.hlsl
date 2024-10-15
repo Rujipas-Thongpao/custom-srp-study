@@ -47,4 +47,8 @@ float3 NormalTangentToWorld (float3 normalTS, float3 normalWS, float4 tangentWS)
 	return TransformTangentToWorld(normalTS, tangentToWorld);
 }
 
+//float Luminance(float3 rgb){
+//    return dot(rgb, real3(0.2126729, 0.7151522, 0.0721750));
+//}
+
 #endif
