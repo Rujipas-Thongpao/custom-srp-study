@@ -34,6 +34,7 @@ public partial class CameraRenderer
         this.context = _context;
         this.camera = _camera;
 
+        // Set up
         PrepareBuffer();
         PrepareForSceneWindow();
         if (!Cull(_shadowSettings.maxDistance))
@@ -48,6 +49,8 @@ public partial class CameraRenderer
         postFXStack.Setup(_context, _camera, _postFxSettings);
         buffer.EndSample(SampleName);
         Setup();
+
+        // Actually draw
         DrawVisibleGeometry(_useDynamicBatching, _useGPUInstancing);
         DrawUnsupportedShaders();
         DrawGizmosBeforeFX();

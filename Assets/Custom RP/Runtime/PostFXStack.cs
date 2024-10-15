@@ -55,11 +55,12 @@ public partial class PostFXStack
 
     }
 
+    // Draw texture from _from to render in _to
     void Draw(RenderTargetIdentifier _from, RenderTargetIdentifier _to, Pass _pass)
     {
-        buffer.SetGlobalTexture(fxSourceId, _from);
-        buffer.SetRenderTarget(_to, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
-        buffer.DrawProcedural(
+        buffer.SetGlobalTexture(fxSourceId, _from); // set fxsource texture to be _from
+        buffer.SetRenderTarget(_to, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store); // Change destination of render to _to instead of camera
+        buffer.DrawProcedural( // draw with different pass.
                 Matrix4x4.identity, settings.Material, (int)_pass,
                 MeshTopology.Triangles, 3
                 );
@@ -71,7 +72,7 @@ public partial class PostFXStack
         buffer.BeginSample("Bloom");
         PostFXSettings.BloomSettings bloom = settings.Bloom;
         int width = camera.pixelWidth / 2, height = camera.pixelHeight / 2;
-        int fromId = _sourceId, toId = bloomPyramidId + 1;
+        int fromId = _sourceId, toId = bloomPyramidId + 1; // id0 is for middle buffer.
         RenderTextureFormat format = RenderTextureFormat.Default;
         int i;
         for (i = 0; i < bloom.maxIterations; i++)
@@ -81,14 +82,18 @@ public partial class PostFXStack
             {
                 break;
             }
+            // Create temp rt
             buffer.GetTemporaryRT(
                 midId, width, height, 0, FilterMode.Bilinear, format
             );
             buffer.GetTemporaryRT(
                 toId, width, height, 0, FilterMode.Bilinear, format
             );
+            // Draw
             Draw(fromId, midId, Pass.BloomHorizontal);
             Draw(midId, toId, Pass.BloomVertical);
+
+            //Debug.Log("from  " + fromId + " to " + toId);
 
             fromId = toId;
             toId += 2;
@@ -107,17 +112,15 @@ public partial class PostFXStack
         /*Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.copy); // render to camera*/
         if (i > 1)
         {
-
             buffer.ReleaseTemporaryRT(fromId - 1);
-            toId -= 5;
-
-
-            for (i -= 1; i > 0; i--)
+            toId = fromId - 3;
+            for (i = bloom.maxIterations - 1; i > 0; i--)
             {
-                buffer.SetGlobalTexture(fxSourceId2, toId + 1);
-                Draw(fromId, toId, Pass.BloomCombine);
-                buffer.ReleaseTemporaryRT(fromId);
-                buffer.ReleaseTemporaryRT(toId - 1);
+                // 5 is last blur, 3 is last blur, 2 is half blur before 3.
+                buffer.SetGlobalTexture(fxSourceId2, toId + 1); // set 3 
+                Draw(fromId, toId, Pass.BloomCombine); // combine 5,3 -> 2 
+                buffer.ReleaseTemporaryRT(fromId); // release 5
+                buffer.ReleaseTemporaryRT(toId + 1); // relase 3
                 fromId = toId;
                 toId -= 2;
             }
