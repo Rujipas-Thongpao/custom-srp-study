@@ -46,5 +46,14 @@ Shader "Hidden/Custom RP/PostFXStackPasses"
                 #pragma fragment BloomCombinePassFragment 
             ENDHLSL
         }
+        Pass {
+            Name "Pre filter"
+
+            HLSLPROGRAM
+                #pragma target 3.5
+                #pragma vertex DefaultPassVertex
+                #pragma fragment BloomPrefilterPassFragment 
+            ENDHLSL
+        }
     }
 }

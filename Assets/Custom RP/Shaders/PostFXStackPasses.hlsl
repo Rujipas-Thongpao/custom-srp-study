@@ -1,10 +1,14 @@
 #ifndef CUSTOM_POST_FX_PASSES_INCLUDED
 #define CUSTOM_POST_FX_PASSES_INCLUDED
 
+
 TEXTURE2D(_PostFXSource);
 TEXTURE2D(_PostFXSource2);
 SAMPLER(sampler_linear_clamp);
+bool _useBicubic;
+float4 _BloomThreshold;
 
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 
 float4 _PostFXSource_TexelSize; // texel Size of _PostFXSource which is assign by unity's black magic
 
@@ -19,6 +23,17 @@ float4 GetSource(float2 screenUV){
 float4 GetSource2(float2 screenUV){
     return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, sampler_linear_clamp, screenUV,0);
 }
+
+
+float4 GetSourceBicubic(float2 screenUV){
+    return SampleTexture2DBicubic(
+	TEXTURE2D_ARGS(_PostFXSource, sampler_linear_clamp), 
+	screenUV,
+	_PostFXSource_TexelSize.zwxy
+	, 1.0, 0.0
+    );
+}
+
 
 struct Varyings {
     float4 positionCS : SV_POSITION;
@@ -98,9 +113,28 @@ float4 BloomVerticalPassFragment(Varyings input) : SV_TARGET{
 
 float4 BloomCombinePassFragment(Varyings input) : SV_TARGET {
     float3 lowRes = GetSource(input.screenUV).rgb;
+    if(_useBicubic){
+	lowRes = GetSourceBicubic(input.screenUV).rgb;
+    }
     float3 highRes = GetSource2(input.screenUV).rgb;
     return float4(lowRes + highRes, 1.0);
 }
+
+float3 ApplyBloomThreshold (float3 color) {
+    float brightness = Max3(color.r, color.g, color.b); // brightness in this case is define by the maximum value between 3 channel
+    float soft = brightness + _BloomThreshold.y;
+    soft = clamp(soft, 0.0, _BloomThreshold.z);
+    soft = soft * soft * _BloomThreshold.w;
+    float contribution = max(soft, brightness - _BloomThreshold.x);
+    contribution /= max(brightness, 0.00001);
+    return color * contribution;
+}
+
+float4 BloomPrefilterPassFragment (Varyings input) : SV_TARGET {
+    float3 color = ApplyBloomThreshold(GetSource(input.screenUV).rgb);
+    return float4(color, 1.0);
+}
+
 
 
 #endif
