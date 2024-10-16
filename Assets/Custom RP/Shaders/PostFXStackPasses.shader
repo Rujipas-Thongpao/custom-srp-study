@@ -73,5 +73,14 @@ Shader "Hidden/Custom RP/PostFXStackPasses"
                 #pragma fragment BloomScatterPassFragment 
             ENDHLSL
         }
+        Pass {
+            Name "Bloom Scatter Final"
+
+            HLSLPROGRAM
+                #pragma target 3.5
+                #pragma vertex DefaultPassVertex
+                #pragma fragment BloomCombinePassFragment 
+            ENDHLSL
+        }
     }
 }

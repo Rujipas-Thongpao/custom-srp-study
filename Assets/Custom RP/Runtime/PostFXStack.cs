@@ -84,18 +84,21 @@ public partial class PostFXStack
         buffer.SetGlobalInt(useBicubicId, bloom.useBicubic ? 1 : 0);
 
 
-        Pass combinePass;
+        Pass combinePass, finalPass;
+        float intensity;
         if (bloom.mode == bloomMode.additive)
         {
-            combinePass = Pass.BloomAdd;
-            buffer.SetGlobalFloat(bloomIntensityId, 1f);
+            combinePass = finalPass = Pass.BloomAdd;
+            intensity = 1f;
         }
         else
         {
             combinePass = Pass.BloomScatter;
-            buffer.SetGlobalFloat(bloomIntensityId, bloom.scatter);
+            finalPass = Pass.BloomScatterFinal;
+            intensity = bloom.scatter;
 
         }
+        buffer.SetGlobalFloat(bloomIntensityId, intensity);
 
 
 
@@ -170,7 +173,7 @@ public partial class PostFXStack
 
         buffer.SetGlobalTexture(fxSourceId2, _sourceId);
         // Render to the camera
-        Draw(fromId, BuiltinRenderTextureType.CameraTarget, combinePass);
+        Draw(fromId, BuiltinRenderTextureType.CameraTarget, finalPass);
 
         buffer.ReleaseTemporaryRT(fromId);
         buffer.ReleaseTemporaryRT(bloomPrefilterId);
@@ -191,5 +194,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter
+    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal
 }
