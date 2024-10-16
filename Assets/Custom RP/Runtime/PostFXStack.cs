@@ -82,7 +82,22 @@ public partial class PostFXStack
         Vector4 threshold = GetThreshold(bloom);
         buffer.SetGlobalVector(bloomThresholdId, threshold);
         buffer.SetGlobalInt(useBicubicId, bloom.useBicubic ? 1 : 0);
-        buffer.SetGlobalFloat(bloomIntensityId, bloom.intensity);
+
+
+        Pass combinePass;
+        if (bloom.mode == bloomMode.additive)
+        {
+            combinePass = Pass.BloomAdd;
+            buffer.SetGlobalFloat(bloomIntensityId, 1f);
+        }
+        else
+        {
+            combinePass = Pass.BloomScatter;
+            buffer.SetGlobalFloat(bloomIntensityId, bloom.scatter);
+
+        }
+
+
 
         RenderTextureFormat format = useHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
         int width = camera.pixelWidth / 2, height = camera.pixelHeight / 2;
@@ -141,7 +156,7 @@ public partial class PostFXStack
             {
                 // 5 is last blur, 3 is last blur, 2 is half blur before 3.
                 buffer.SetGlobalTexture(fxSourceId2, toId + 1); // set 3 
-                Draw(fromId, toId, Pass.BloomCombine); // combine 5,3 -> 2 
+                Draw(fromId, toId, combinePass); // combine 5,3 -> 2 
                 buffer.ReleaseTemporaryRT(fromId); // release 5
                 buffer.ReleaseTemporaryRT(toId + 1); // relase 3
                 fromId = toId;
@@ -155,7 +170,7 @@ public partial class PostFXStack
 
         buffer.SetGlobalTexture(fxSourceId2, _sourceId);
         // Render to the camera
-        Draw(fromId, BuiltinRenderTextureType.CameraTarget, Pass.BloomCombine);
+        Draw(fromId, BuiltinRenderTextureType.CameraTarget, combinePass);
 
         buffer.ReleaseTemporaryRT(fromId);
         buffer.ReleaseTemporaryRT(bloomPrefilterId);
@@ -176,5 +191,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomCombine, Prefilter, PrefilterFireflies
+    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter
 }

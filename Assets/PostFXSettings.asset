@@ -17,6 +17,8 @@ MonoBehaviour:
     maxIterations: 5
     downscaleLimit: 1
     useBicubic: 1
-    threshold: 1
-    thresholdKnee: 0
-    intensity: 2.36
+    threshold: 0
+    thresholdKnee: 0.00042426406
+    intensity: 1
+    mode: 1
+    scatter: 0.293

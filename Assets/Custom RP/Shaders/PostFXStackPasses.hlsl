@@ -166,6 +166,14 @@ float4 BloomPrefilterFirefliesPassFragment (Varyings input) : SV_TARGET {
 }
 
 
+float4 BloomScatterPassFragment(Varyings input) : SV_TARGET {
+    float3 lowRes = GetSource(input.screenUV).rgb;
+    if(_useBicubic){
+	lowRes = GetSourceBicubic(input.screenUV).rgb;
+    }
+    float3 highRes = GetSource2(input.screenUV).rgb;
+    return float4(lerp(highRes, lowRes, _BloomIntensity), 1.0) ;
+}
 
 
 #endif

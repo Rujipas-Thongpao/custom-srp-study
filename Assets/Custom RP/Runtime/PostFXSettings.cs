@@ -49,10 +49,17 @@ public class PostFXSettings : ScriptableObject
 
         [Min(0f)]
         public float intensity;
+
+        public bloomMode mode;
+
+        [Range(0f, 1f)]
+        public float scatter;
+
+
     }
+}
 
-
-
-
-
+public enum bloomMode
+{
+    additive, scatter
 }
