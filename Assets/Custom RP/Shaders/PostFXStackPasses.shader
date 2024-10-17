@@ -82,5 +82,14 @@ Shader "Hidden/Custom RP/PostFXStackPasses"
                 #pragma fragment BloomCombinePassFragment 
             ENDHLSL
         }
+        Pass {
+            Name "Tone Mapping Reinhard"
+
+            HLSLPROGRAM
+                #pragma target 3.5
+                #pragma vertex DefaultPassVertex
+                #pragma fragment ToneMappingReinhardPassFragment
+            ENDHLSL
+        }
     }
 }
