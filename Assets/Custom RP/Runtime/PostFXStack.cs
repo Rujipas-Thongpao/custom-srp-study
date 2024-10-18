@@ -200,7 +200,7 @@ public partial class PostFXStack
     void DoToneMapping(int _sourceId)
     {
         ToneMappingMode mode = settings.ToneMapping.mode;
-        Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingReinhard;
+        Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingACES + (int)mode;
         Draw(_sourceId, BuiltinRenderTextureType.CameraTarget, pass);
     }
 
@@ -218,5 +218,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ToneMappingReinhard
+    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard,
 }

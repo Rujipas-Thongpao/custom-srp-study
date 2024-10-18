@@ -191,5 +191,17 @@ float4 ToneMappingReinhardPassFragment(Varyings input)  : SV_TARGET{
     return color;
 }
 
+float4 ToneMappingNeutralPassFragment(Varyings input)  : SV_TARGET{
+    float4 color = GetSource(input.screenUV);
+    color.rgb = min(color.rgb, 60.);
+    color.rgb = NeutralTonemap(color.rgb);
+    return color;
+}
+float4 ToneMappingACESPassFragment(Varyings input)  : SV_TARGET{
+    float4 color = GetSource(input.screenUV);
+    color.rgb = min(color.rgb, 60.);
+    color.rgb = AcesTonemap(unity_to_ACES(color.rgb));
+    return color;
+}
 
 #endif

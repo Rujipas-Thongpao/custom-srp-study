@@ -69,4 +69,4 @@ public enum bloomMode
     additive, scatter
 }
 
-public enum ToneMappingMode { None = -1, Reinhard }
+public enum ToneMappingMode { None = -1, ACES, Neutral, Reinhard }
