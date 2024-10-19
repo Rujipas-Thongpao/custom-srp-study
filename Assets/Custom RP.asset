@@ -31,4 +31,4 @@ MonoBehaviour:
       cascadeFade: 0.1
       cascadeBlend: 0
   postFXSettings: {fileID: 11400000, guid: 093a0afc74eaea049862230e1157bc62, type: 2}
-  hdr: 0
+  hdr: 1

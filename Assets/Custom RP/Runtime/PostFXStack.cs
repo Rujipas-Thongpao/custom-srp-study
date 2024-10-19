@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static PostFXSettings;
 
 public partial class PostFXStack
 {
@@ -13,7 +14,9 @@ public partial class PostFXStack
                bloomPrefilterId = Shader.PropertyToID("_BloomPrefilter"),
                bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
                bloomIntensityId = Shader.PropertyToID("_BloomIntensity"),
-               bloomResultId = Shader.PropertyToID("_BloomResult");
+               bloomResultId = Shader.PropertyToID("_BloomResult"),
+               colorAdjustmentsId = Shader.PropertyToID("_ColorAdjustments"),
+               colorFilterId = Shader.PropertyToID("_ColorFilter");
 
     CommandBuffer buffer = new CommandBuffer
     {
@@ -197,10 +200,27 @@ public partial class PostFXStack
         return true;
     }
 
+    void ConfigureColorAdjustments()
+    {
+        ColorAdjustmentsSettings c = settings.ColorAdjustments;
+
+        Vector4 colorAdjustData = new Vector4(
+                Mathf.Pow(2f, c.postExposure),
+                c.contrast * .01f + 1f,
+                c.hueShift * 1f / 360f,
+                c.saturation * .01f + 1f
+                );
+
+        buffer.SetGlobalVector(colorAdjustmentsId, colorAdjustData);
+        buffer.SetGlobalColor(colorFilterId, c.colorFilter.linear);
+    }
     void DoToneMapping(int _sourceId)
     {
+
+        ConfigureColorAdjustments();
+
         ToneMappingMode mode = settings.ToneMapping.mode;
-        Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingACES + (int)mode;
+        Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingNone + (int)mode;
         Draw(_sourceId, BuiltinRenderTextureType.CameraTarget, pass);
     }
 
@@ -218,5 +238,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard,
+    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ToneMappingNone, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard,
 }

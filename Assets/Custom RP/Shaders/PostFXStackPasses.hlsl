@@ -8,6 +8,8 @@ SAMPLER(sampler_linear_clamp);
 bool _useBicubic;
 float4 _BloomThreshold;
 float _BloomIntensity;
+float4 _ColorAdjustments;
+float4 _ColorFilter;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
@@ -18,6 +20,43 @@ float4 GetSourceTexelSize(){
     return _PostFXSource_TexelSize;
 }
 
+float3 ColorGradingExposure(float3 color){
+    return color * _ColorAdjustments.x;
+}
+
+float3 ColorGradingContrast(float3 color){
+    color = LinearToLogC(color);
+    color = (color - ACEScc_MIDGRAY) * _ColorAdjustments.y + ACEScc_MIDGRAY;
+    return LogCToLinear(color);
+}
+
+float3 ColorGradingColorFilter(float3 color){
+    return max(color * _ColorFilter.rgb,0.);
+}
+
+float3 ColorGradingHueShift(float3 color){
+    float3 colorHSV = RgbToHsv(color);
+    float hue = colorHSV.x + _ColorAdjustments.z;
+    colorHSV.x = RotateHue(hue, 0.0,1.0);
+    return HsvToRgb(colorHSV);
+}
+
+
+float3 ColorGradingSaturation(float3 color){
+    float3 lum = Luminance(color);
+    return (color-lum) * _ColorAdjustments.w + lum;
+}
+
+float3 ColorGrade(float3 color){
+    color = min(color, 60.);
+    color = ColorGradingExposure(color);
+    color = ColorGradingContrast(color);
+    color = ColorGradingColorFilter(color);
+    color = ColorGradingHueShift(color);
+    color = ColorGradingSaturation(color);
+
+    return color;
+}
 float4 GetSource(float2 screenUV){
     return SAMPLE_TEXTURE2D_LOD(_PostFXSource, sampler_linear_clamp, screenUV,0);
 }
@@ -184,22 +223,28 @@ float4 BloomScatterFinalPassFragment(Varyings input) : SV_TARGET {
     return float4(lerp(highRes, lowRes, _BloomIntensity), 1.0) ;
 }
 
+float4 ToneMappingNonePassFragment(Varyings input) : SV_TARGET{
+    float4 color = GetSource(input.screenUV);
+    color.rgb = ColorGrade(color.rgb);
+    return color;
+}
+
 float4 ToneMappingReinhardPassFragment(Varyings input)  : SV_TARGET{
     float4 color = GetSource(input.screenUV);
-    color.rgb = min(color.rgb, 60.);
+    color.rgb = ColorGrade(color.rgb);
     color.rgb /= color.rgb + 1.;
     return color;
 }
 
 float4 ToneMappingNeutralPassFragment(Varyings input)  : SV_TARGET{
     float4 color = GetSource(input.screenUV);
-    color.rgb = min(color.rgb, 60.);
+    color.rgb = ColorGrade(color.rgb);
     color.rgb = NeutralTonemap(color.rgb);
     return color;
 }
 float4 ToneMappingACESPassFragment(Varyings input)  : SV_TARGET{
     float4 color = GetSource(input.screenUV);
-    color.rgb = min(color.rgb, 60.);
+    color.rgb = ColorGrade(color.rgb);
     color.rgb = AcesTonemap(unity_to_ACES(color.rgb));
     return color;
 }

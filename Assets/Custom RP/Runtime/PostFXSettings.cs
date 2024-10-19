@@ -11,6 +11,11 @@ public class PostFXSettings : ScriptableObject
     [System.NonSerialized] Material material;
     [SerializeField] BloomSettings bloom = default;
     [SerializeField] ToneMappingSettings toneMapping = default;
+    [SerializeField]
+    ColorAdjustmentsSettings colorAdjustments = new ColorAdjustmentsSettings
+    {
+        colorFilter = Color.white
+    };
 
 
     public Material Material
@@ -28,6 +33,7 @@ public class PostFXSettings : ScriptableObject
 
     public BloomSettings Bloom => bloom;
     public ToneMappingSettings ToneMapping => toneMapping;
+    public ColorAdjustmentsSettings ColorAdjustments => colorAdjustments;
 
     [System.Serializable]
     public struct BloomSettings
@@ -62,6 +68,24 @@ public class PostFXSettings : ScriptableObject
     {
         public ToneMappingMode mode;
     }
+
+    [System.Serializable]
+    public struct ColorAdjustmentsSettings
+    {
+        public float postExposure;
+
+        [Range(-100f, 100f)]
+        public float contrast;
+
+        [ColorUsage(false, true)]
+        public Color colorFilter;
+
+        [Range(-180f, 180f)]
+        public float hueShift;
+
+        [Range(-100f, 100f)]
+        public float saturation;
+    }
 }
 
 public enum bloomMode
@@ -69,4 +93,4 @@ public enum bloomMode
     additive, scatter
 }
 
-public enum ToneMappingMode { None = -1, ACES, Neutral, Reinhard }
+public enum ToneMappingMode { None, ACES, Neutral, Reinhard }
