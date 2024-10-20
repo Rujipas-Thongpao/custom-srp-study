@@ -24,6 +24,13 @@ public class PostFXSettings : ScriptableObject
         shadows = Color.gray,
         highlights = Color.gray
     };
+    [SerializeField]
+    ChannelMixerSettings channelMixer = new ChannelMixerSettings
+    {
+        red = Vector3.right,
+        green = Vector3.up,
+        blue = Vector3.forward
+    };
 
 
 
@@ -45,6 +52,7 @@ public class PostFXSettings : ScriptableObject
     public ColorAdjustmentsSettings ColorAdjustments => colorAdjustments;
     public WhiteBalanceSettings Whitebalance => whiteBalance;
     public SplitToneSettings SplitTone => splitTone;
+    public ChannelMixerSettings ChannelMixer => channelMixer;
 
     [System.Serializable]
     public struct BloomSettings
@@ -113,6 +121,12 @@ public class PostFXSettings : ScriptableObject
 
         [Range(-100f, 100f)]
         public float balance;
+    }
+
+    [System.Serializable]
+    public struct ChannelMixerSettings
+    {
+        public Vector3 red, green, blue;
     }
 }
 

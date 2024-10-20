@@ -14,6 +14,7 @@ float4 _WhiteBalance;
 float4 _SplitToneShadow;
 float4 _SplitToneHighlight;
 float _SplitToneBalance;
+float4 _ChannelMixerRed, _ChannelMixerGreen, _ChannelMixerBlue;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
@@ -22,6 +23,13 @@ float4 _PostFXSource_TexelSize; // texel Size of _PostFXSource which is assign b
 
 float4 GetSourceTexelSize(){
     return _PostFXSource_TexelSize;
+}
+
+float3 ColorGradingChannelMixer(float3 color){
+    return max(0,mul(
+	float3x3(_ChannelMixerRed.rgb, _ChannelMixerGreen.rgb, _ChannelMixerBlue.rgb),
+	color
+    ));
 }
 
 float3 ColorGradingSplitTone( float3 color ){
@@ -75,6 +83,7 @@ float3 ColorGrade(float3 color){
     color = ColorGradingContrast(color);
     color = ColorGradingColorFilter(color);
     color = ColorGradingSplitTone(color);
+    color = ColorGradingChannelMixer(color);
     color = ColorGradingHueShift(color);
     color = ColorGradingSaturation(color);
 

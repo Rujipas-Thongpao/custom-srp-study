@@ -37,3 +37,7 @@ MonoBehaviour:
     shadows: {r: 0.29837132, g: 0.36077926, b: 0.4245283, a: 1}
     highlights: {r: 1, g: 0.67495006, b: 0.495283, a: 1}
     balance: 35
+  channelMixer:
+    red: {x: 1, y: 0, z: 0.33333}
+    green: {x: 0, y: 0.5, z: 0.33333}
+    blue: {x: 0, y: 0.5, z: 0.33333}
