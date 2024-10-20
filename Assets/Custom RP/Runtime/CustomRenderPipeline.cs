@@ -14,9 +14,12 @@ public partial class CustomRenderPipeline : RenderPipeline
 
     bool allowHDR;
 
+    ColorLUTResolution colorLUTResolution;
+
     public CustomRenderPipeline(
         bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher,
-        ShadowSettings shadowSettings, PostFXSettings _postFxSettings, bool _allowHDR
+        ShadowSettings shadowSettings, PostFXSettings _postFxSettings, bool _allowHDR,
+        ColorLUTResolution _lutRes
     )
     {
         InitializeForEditor();
@@ -25,6 +28,7 @@ public partial class CustomRenderPipeline : RenderPipeline
         this.useGPUInstancing = useGPUInstancing;
         this.postFXSettings = _postFxSettings;
         this.allowHDR = _allowHDR;
+        this.colorLUTResolution = _lutRes;
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
         GraphicsSettings.lightsUseLinearIntensity = true;
     }
@@ -42,7 +46,7 @@ public partial class CustomRenderPipeline : RenderPipeline
         {
             renderer.Render(
                 context, cameras[i], useDynamicBatching, useGPUInstancing,
-                shadowSettings, this.postFXSettings, this.allowHDR
+                shadowSettings, this.postFXSettings, this.allowHDR, this.colorLUTResolution
             );
         }
     }

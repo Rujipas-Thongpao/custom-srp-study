@@ -118,5 +118,14 @@ Shader "Hidden/Custom RP/PostFXStackPasses"
                 #pragma fragment ToneMappingNonePassFragment
             ENDHLSL
         }
+        Pass {
+            Name "Final"
+
+            HLSLPROGRAM
+                #pragma target 3.5
+                #pragma vertex DefaultPassVertex
+                #pragma fragment FinalPassFragment
+            ENDHLSL
+        }
     }
 }

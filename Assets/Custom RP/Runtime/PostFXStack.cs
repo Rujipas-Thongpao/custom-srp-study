@@ -36,7 +36,12 @@ public partial class PostFXStack
                smhShadowsColorId = Shader.PropertyToID("_SMHShadows"),
                smhMidtonesColorId = Shader.PropertyToID("_SMHMidtones"),
                smhHighlightsColorId = Shader.PropertyToID("_SMHHighlights"),
-               smhRangeId = Shader.PropertyToID("_SMHRange")
+               smhRangeId = Shader.PropertyToID("_SMHRange"),
+
+               colorLUTId = Shader.PropertyToID("_ColorGradingLUT"),
+               colorLUTParametersId = Shader.PropertyToID("_ColorLUTParameters"),
+               colorGradingLUTParametersId = Shader.PropertyToID("_ColorGradingLUTParameters"),
+               colorGradingLUTInLogId = Shader.PropertyToID("_ColorGradingLUTInLogId")
                ;
 
 
@@ -53,6 +58,7 @@ public partial class PostFXStack
 
     int bloomPyramidId;
     bool useHDR;
+    ColorLUTResolution colorLUTResolution;
 
 
     public bool IsActive => settings != null;
@@ -72,11 +78,12 @@ public partial class PostFXStack
 
     }
 
-    public void Setup(ScriptableRenderContext _context, Camera _camera, PostFXSettings _settings, bool _useHDR)
+    public void Setup(ScriptableRenderContext _context, Camera _camera, PostFXSettings _settings, bool _useHDR, ColorLUTResolution _lutRes)
     {
         this.useHDR = _useHDR;
         this.context = _context;
         this.camera = _camera;
+        this.colorLUTResolution = _lutRes;
         this.settings = (this.camera.cameraType <= CameraType.SceneView) ? _settings : null;
         ApplySceneViewState();
     }
@@ -293,8 +300,33 @@ public partial class PostFXStack
         ConfigureSMH();
 
         ToneMappingMode mode = settings.ToneMapping.mode;
-        Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingNone + (int)mode;
-        Draw(_sourceId, BuiltinRenderTextureType.CameraTarget, pass);
+        Pass pass = mode < 0 ? Pass.copy : Pass.ColorGradingNone + (int)mode;
+
+        int LUTheight = (int)colorLUTResolution;
+        int LUTwidth = LUTheight * LUTheight;
+        buffer.SetGlobalVector(colorLUTParametersId, new Vector4(
+                    LUTheight,
+                    .5f / LUTwidth,
+                    .5f / LUTheight,
+                    LUTheight / (LUTheight - 1f)
+        ));
+        buffer.SetGlobalVector(colorGradingLUTParametersId, new Vector4(
+                    1f / LUTwidth,
+                    1f / LUTheight,
+                    LUTheight - 1f
+        ));
+        bool lutInLog = useHDR && pass != Pass.ColorGradingNone;
+        buffer.SetGlobalFloat(colorGradingLUTInLogId, lutInLog ? 1f : 0f);
+
+        buffer.GetTemporaryRT(colorLUTId, LUTwidth, LUTheight, 0, FilterMode.Bilinear, RenderTextureFormat.DefaultHDR);
+
+
+
+        Draw(_sourceId, colorLUTId, pass); // draw to LUT
+        Draw(_sourceId, BuiltinRenderTextureType.CameraTarget, Pass.Final);
+
+        buffer.ReleaseTemporaryRT(colorLUTId);
+
     }
 
     Vector4 GetThreshold(PostFXSettings.BloomSettings _bloom)
@@ -311,5 +343,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ToneMappingNone, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard,
+    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ColorGradingNone, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard, Final
 }
