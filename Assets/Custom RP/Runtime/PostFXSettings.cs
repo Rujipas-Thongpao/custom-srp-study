@@ -17,6 +17,8 @@ public class PostFXSettings : ScriptableObject
         colorFilter = Color.white
     };
 
+    [SerializeField] WhiteBalanceSettings whiteBalance = default;
+
 
     public Material Material
     {
@@ -34,6 +36,7 @@ public class PostFXSettings : ScriptableObject
     public BloomSettings Bloom => bloom;
     public ToneMappingSettings ToneMapping => toneMapping;
     public ColorAdjustmentsSettings ColorAdjustments => colorAdjustments;
+    public WhiteBalanceSettings Whitebalance => whiteBalance;
 
     [System.Serializable]
     public struct BloomSettings
@@ -85,6 +88,13 @@ public class PostFXSettings : ScriptableObject
 
         [Range(-100f, 100f)]
         public float saturation;
+    }
+
+    [System.Serializable]
+    public struct WhiteBalanceSettings
+    {
+        [Range(-100f, 100f)]
+        public float temperature, tint;
     }
 }
 

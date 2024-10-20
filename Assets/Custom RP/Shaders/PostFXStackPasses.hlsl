@@ -10,6 +10,7 @@ float4 _BloomThreshold;
 float _BloomIntensity;
 float4 _ColorAdjustments;
 float4 _ColorFilter;
+float4 _WhiteBalance;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
@@ -20,6 +21,11 @@ float4 GetSourceTexelSize(){
     return _PostFXSource_TexelSize;
 }
 
+float3 ColorGradingWhiteBalance( float3 color){
+    color = LinearToLMS(color);
+    color *= _WhiteBalance.rgb;
+    return LMSToLinear(color);
+}
 float3 ColorGradingExposure(float3 color){
     return color * _ColorAdjustments.x;
 }
@@ -49,6 +55,7 @@ float3 ColorGradingSaturation(float3 color){
 
 float3 ColorGrade(float3 color){
     color = min(color, 60.);
+    color = ColorGradingWhiteBalance(color);
     color = ColorGradingExposure(color);
     color = ColorGradingContrast(color);
     color = ColorGradingColorFilter(color);

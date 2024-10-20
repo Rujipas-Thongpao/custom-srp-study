@@ -23,10 +23,13 @@ MonoBehaviour:
     mode: 0
     scatter: 1
   toneMapping:
-    mode: 0
+    mode: 1
   colorAdjustments:
-    postExposure: 1
-    contrast: 29.8
+    postExposure: 0.55
+    contrast: 36
     colorFilter: {r: 1, g: 1, b: 1, a: 1}
-    hueShift: 0
-    saturation: 0
+    hueShift: 3
+    saturation: -9
+  whiteBalance:
+    temperature: -37
+    tint: 5

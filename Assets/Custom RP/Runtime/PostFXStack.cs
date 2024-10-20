@@ -16,7 +16,9 @@ public partial class PostFXStack
                bloomIntensityId = Shader.PropertyToID("_BloomIntensity"),
                bloomResultId = Shader.PropertyToID("_BloomResult"),
                colorAdjustmentsId = Shader.PropertyToID("_ColorAdjustments"),
-               colorFilterId = Shader.PropertyToID("_ColorFilter");
+               colorFilterId = Shader.PropertyToID("_ColorFilter"),
+               whiteBalanceId = Shader.PropertyToID("_WhiteBalance");
+
 
     CommandBuffer buffer = new CommandBuffer
     {
@@ -200,6 +202,14 @@ public partial class PostFXStack
         return true;
     }
 
+    void ConfigureWhiteBalance()
+    {
+        WhiteBalanceSettings w = settings.Whitebalance;
+        buffer.SetGlobalVector(
+                whiteBalanceId,
+                ColorUtils.ColorBalanceToLMSCoeffs(w.temperature, w.tint)
+        );
+    }
     void ConfigureColorAdjustments()
     {
         ColorAdjustmentsSettings c = settings.ColorAdjustments;
@@ -218,6 +228,7 @@ public partial class PostFXStack
     {
 
         ConfigureColorAdjustments();
+        ConfigureWhiteBalance();
 
         ToneMappingMode mode = settings.ToneMapping.mode;
         Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingNone + (int)mode;
