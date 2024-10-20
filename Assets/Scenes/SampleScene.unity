@@ -6727,8 +6727,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 6.9776278e+22, y: 1.0585578e-38, z: 1.6905131e+31,
-    w: 2.264878e+20}
+  m_BoundingSphereOverride: {x: 0, y: 6e-44, z: 1.1e-44, w: 3.803e-42}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -9312,7 +9311,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 6.32
+  orthographic size: 12.05
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

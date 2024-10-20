@@ -15,15 +15,28 @@ public partial class PostFXStack
                bloomThresholdId = Shader.PropertyToID("_BloomThreshold"),
                bloomIntensityId = Shader.PropertyToID("_BloomIntensity"),
                bloomResultId = Shader.PropertyToID("_BloomResult"),
+
                colorAdjustmentsId = Shader.PropertyToID("_ColorAdjustments"),
                colorFilterId = Shader.PropertyToID("_ColorFilter"),
+
+
                whiteBalanceId = Shader.PropertyToID("_WhiteBalance"),
+
+               // Split tone
                splitToneShadowId = Shader.PropertyToID("_SplitToneShadow"),
                splitToneHighlightId = Shader.PropertyToID("_SplitToneHighlight"),
                splitToneBalanceId = Shader.PropertyToID("_SplitToneBalance"),
+
+               // Channel Mixer
                channelMixerRedId = Shader.PropertyToID("_ChannelMixerRed"),
                channelMixerGreenId = Shader.PropertyToID("_ChannelMixerGreen"),
-               channelMixerBlueId = Shader.PropertyToID("_ChannelMixerBlue")
+               channelMixerBlueId = Shader.PropertyToID("_ChannelMixerBlue"),
+
+               // Shadow Midtone Highlight 
+               smhShadowsColorId = Shader.PropertyToID("_SMHShadows"),
+               smhMidtonesColorId = Shader.PropertyToID("_SMHMidtones"),
+               smhHighlightsColorId = Shader.PropertyToID("_SMHHighlights"),
+               smhRangeId = Shader.PropertyToID("_SMHRange")
                ;
 
 
@@ -212,6 +225,22 @@ public partial class PostFXStack
         return true;
     }
 
+    void ConfigureSMH()
+    {
+        ShadowsMidtonesHighlightsSettings smh = settings.SMH;
+
+        buffer.SetGlobalColor(smhShadowsColorId, smh.shadows.linear);
+        buffer.SetGlobalColor(smhMidtonesColorId, smh.midtones.linear);
+        buffer.SetGlobalColor(smhHighlightsColorId, smh.highlights.linear);
+
+        buffer.SetGlobalVector(smhRangeId, new Vector4(
+            smh.shadowsStart,
+            smh.shadowsEnd,
+            smh.highlightsStart,
+            smh.highlightsEnd
+        ));
+    }
+
     void ConfigureChannelMixer()
     {
         ChannelMixerSettings cm = settings.ChannelMixer;
@@ -261,6 +290,7 @@ public partial class PostFXStack
         ConfigureWhiteBalance();
         ConfigureSplitTone();
         ConfigureChannelMixer();
+        ConfigureSMH();
 
         ToneMappingMode mode = settings.ToneMapping.mode;
         Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingNone + (int)mode;

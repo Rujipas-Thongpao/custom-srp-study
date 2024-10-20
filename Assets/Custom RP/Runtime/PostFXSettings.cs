@@ -32,6 +32,19 @@ public class PostFXSettings : ScriptableObject
         blue = Vector3.forward
     };
 
+    [SerializeField]
+    ShadowsMidtonesHighlightsSettings smh = new ShadowsMidtonesHighlightsSettings
+    {
+        shadows = Color.white,
+        midtones = Color.white,
+        highlights = Color.white,
+
+        shadowsStart = 0f,
+        shadowsEnd = .3f,
+        highlightsStart = .55f,
+        highlightsEnd = 1f
+    };
+
 
 
     public Material Material
@@ -53,6 +66,7 @@ public class PostFXSettings : ScriptableObject
     public WhiteBalanceSettings Whitebalance => whiteBalance;
     public SplitToneSettings SplitTone => splitTone;
     public ChannelMixerSettings ChannelMixer => channelMixer;
+    public ShadowsMidtonesHighlightsSettings SMH => smh;
 
     [System.Serializable]
     public struct BloomSettings
@@ -127,6 +141,16 @@ public class PostFXSettings : ScriptableObject
     public struct ChannelMixerSettings
     {
         public Vector3 red, green, blue;
+    }
+
+    [System.Serializable]
+    public struct ShadowsMidtonesHighlightsSettings
+    {
+        [ColorUsage(false, true)]
+        public Color shadows, midtones, highlights;
+
+        [Range(0f, 2f)]
+        public float shadowsStart, shadowsEnd, highlightsStart, highlightsEnd;
     }
 }
 

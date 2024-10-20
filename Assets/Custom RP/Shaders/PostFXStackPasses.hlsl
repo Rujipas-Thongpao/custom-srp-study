@@ -15,6 +15,7 @@ float4 _SplitToneShadow;
 float4 _SplitToneHighlight;
 float _SplitToneBalance;
 float4 _ChannelMixerRed, _ChannelMixerGreen, _ChannelMixerBlue;
+float4 _SMHShadows, _SMHMidtones, _SMHHighlights, _SMHRange;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
@@ -23,6 +24,17 @@ float4 _PostFXSource_TexelSize; // texel Size of _PostFXSource which is assign b
 
 float4 GetSourceTexelSize(){
     return _PostFXSource_TexelSize;
+}
+
+float3 ColorGradingSMH(float3 color){
+    float lum = Luminance(color);
+    float shadowWeight = 1. - smoothstep(_SMHRange.x, _SMHRange.y, lum);
+    float highlightWeight = smoothstep(_SMHRange.z, _SMHRange.w, lum);
+    float midtoneWeight = 1. - shadowWeight - highlightWeight;
+
+    return color * _SMHShadows.rgb * shadowWeight +
+    color * _SMHMidtones.rgb * midtoneWeight +
+    color * _SMHHighlights.rgb * highlightWeight;
 }
 
 float3 ColorGradingChannelMixer(float3 color){
@@ -84,6 +96,7 @@ float3 ColorGrade(float3 color){
     color = ColorGradingColorFilter(color);
     color = ColorGradingSplitTone(color);
     color = ColorGradingChannelMixer(color);
+    color = ColorGradingSMH(color);
     color = ColorGradingHueShift(color);
     color = ColorGradingSaturation(color);
 
