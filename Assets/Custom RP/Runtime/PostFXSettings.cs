@@ -18,6 +18,13 @@ public class PostFXSettings : ScriptableObject
     };
 
     [SerializeField] WhiteBalanceSettings whiteBalance = default;
+    [SerializeField]
+    SplitToneSettings splitTone = new SplitToneSettings
+    {
+        shadows = Color.gray,
+        highlights = Color.gray
+    };
+
 
 
     public Material Material
@@ -37,6 +44,7 @@ public class PostFXSettings : ScriptableObject
     public ToneMappingSettings ToneMapping => toneMapping;
     public ColorAdjustmentsSettings ColorAdjustments => colorAdjustments;
     public WhiteBalanceSettings Whitebalance => whiteBalance;
+    public SplitToneSettings SplitTone => splitTone;
 
     [System.Serializable]
     public struct BloomSettings
@@ -95,6 +103,16 @@ public class PostFXSettings : ScriptableObject
     {
         [Range(-100f, 100f)]
         public float temperature, tint;
+    }
+
+    [System.Serializable]
+    public struct SplitToneSettings
+    {
+        [ColorUsage(false)]
+        public Color shadows, highlights;
+
+        [Range(-100f, 100f)]
+        public float balance;
     }
 }
 

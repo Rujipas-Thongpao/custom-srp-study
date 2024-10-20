@@ -33,3 +33,7 @@ MonoBehaviour:
   whiteBalance:
     temperature: -37
     tint: 5
+  splitTone:
+    shadows: {r: 0.29837132, g: 0.36077926, b: 0.4245283, a: 1}
+    highlights: {r: 1, g: 0.67495006, b: 0.495283, a: 1}
+    balance: 35

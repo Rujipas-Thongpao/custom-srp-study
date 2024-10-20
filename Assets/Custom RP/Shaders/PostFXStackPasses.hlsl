@@ -11,6 +11,9 @@ float _BloomIntensity;
 float4 _ColorAdjustments;
 float4 _ColorFilter;
 float4 _WhiteBalance;
+float4 _SplitToneShadow;
+float4 _SplitToneHighlight;
+float _SplitToneBalance;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
@@ -21,6 +24,18 @@ float4 GetSourceTexelSize(){
     return _PostFXSource_TexelSize;
 }
 
+float3 ColorGradingSplitTone( float3 color ){
+    color = PositivePow(color, 1./2.2);
+
+    float t = saturate(Luminance(saturate(color)) + _SplitToneBalance);
+    float3 s = lerp(.5, _SplitToneShadow.rgb, 1.-t);
+    float3 h = lerp(.5, _SplitToneHighlight.rgb, t);
+
+    color = SoftLight(color,s);
+    color = SoftLight(color,h);
+
+    return PositivePow(color, 2.2);
+}
 float3 ColorGradingWhiteBalance( float3 color){
     color = LinearToLMS(color);
     color *= _WhiteBalance.rgb;
@@ -59,6 +74,7 @@ float3 ColorGrade(float3 color){
     color = ColorGradingExposure(color);
     color = ColorGradingContrast(color);
     color = ColorGradingColorFilter(color);
+    color = ColorGradingSplitTone(color);
     color = ColorGradingHueShift(color);
     color = ColorGradingSaturation(color);
 

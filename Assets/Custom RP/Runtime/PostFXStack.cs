@@ -17,7 +17,13 @@ public partial class PostFXStack
                bloomResultId = Shader.PropertyToID("_BloomResult"),
                colorAdjustmentsId = Shader.PropertyToID("_ColorAdjustments"),
                colorFilterId = Shader.PropertyToID("_ColorFilter"),
-               whiteBalanceId = Shader.PropertyToID("_WhiteBalance");
+               whiteBalanceId = Shader.PropertyToID("_WhiteBalance"),
+               splitToneShadowId = Shader.PropertyToID("_SplitToneShadow"),
+               splitToneHighlightId = Shader.PropertyToID("_SplitToneHighlight"),
+               splitToneBalanceId = Shader.PropertyToID("_SplitToneBalance");
+
+
+
 
 
     CommandBuffer buffer = new CommandBuffer
@@ -202,6 +208,18 @@ public partial class PostFXStack
         return true;
     }
 
+    void ConfigureSplitTone()
+    {
+        SplitToneSettings st = settings.SplitTone;
+        Color s = st.shadows;
+        Color h = st.highlights;
+        float b = st.balance * .01f;
+
+        buffer.SetGlobalColor(splitToneShadowId, s);
+        buffer.SetGlobalColor(splitToneHighlightId, h);
+        buffer.SetGlobalFloat(splitToneBalanceId, b);
+
+    }
     void ConfigureWhiteBalance()
     {
         WhiteBalanceSettings w = settings.Whitebalance;
@@ -229,6 +247,7 @@ public partial class PostFXStack
 
         ConfigureColorAdjustments();
         ConfigureWhiteBalance();
+        ConfigureSplitTone();
 
         ToneMappingMode mode = settings.ToneMapping.mode;
         Pass pass = mode < 0 ? Pass.copy : Pass.ToneMappingNone + (int)mode;
