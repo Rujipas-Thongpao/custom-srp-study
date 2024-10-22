@@ -6,6 +6,7 @@
 		_Cutoff ("Alpha Cutoff", Range(0.0, 1.0)) = 0.5
 		[Toggle(_CLIPPING)] _Clipping ("Alpha Clipping", Float) = 0
 		[Toggle(_VERTEX_COLORS)] _VertexColor("Vertex Color", Float) = 0
+		[Toggle(_FLIPBOOK_BLENDING)] _FlipbookBlending ("Flipbook blending", Float) = 0
 		[KeywordEnum(On, Clip, Dither, Off)] _Shadows ("Shadows", Float) = 0
 
 		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1
@@ -27,6 +28,7 @@
 			#pragma target 3.5
 			#pragma shader_feature _CLIPPING
 			#pragma shader_feature _VERTEX_COLORS
+			#pragma shader_feature _FLIPBOOK_BLENDING
 			#pragma multi_compile_instancing
 
 			#pragma vertex UnlitPassVertex

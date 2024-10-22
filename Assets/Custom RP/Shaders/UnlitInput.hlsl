@@ -13,12 +13,16 @@ UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 struct InputConfig{
     float2 baseUV;
     float4 color;
+    float3 flipbookUVB;
+    bool isFlipbookBlending;
 };
 
 InputConfig GetInputConfig(float2 baseUV){
     InputConfig c;
     c.baseUV = baseUV;
     c.color = 1.;
+    c.flipbookUVB = 0.;
+    c.isFlipbookBlending = false;
     return c;
 }
 
@@ -31,9 +35,13 @@ float2 TransformBaseUV (float2 baseUV) {
 }
 
 float4 GetBase (InputConfig c) {
-    float4 map = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.baseUV);
+    float4 baseMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.baseUV);
+    if(c.isFlipbookBlending){
+	float4 flipbookMap = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, c.flipbookUVB.xy);
+	baseMap = lerp(baseMap, flipbookMap, c.flipbookUVB.z);
+    }
     float4 color = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
-    return map * color;
+    return baseMap* color;
 }
 float GetCutoff (InputConfig c) {
     return UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);
