@@ -69,24 +69,25 @@ void ClipLOD(float2 positionCS, float fade){
 float4 LitPassFragment (Varyings input) : SV_TARGET {
 	UNITY_SETUP_INSTANCE_ID(input);
 
+	InputConfig config = GetInputConfig(input.baseUV, input.detailUV);
 	ClipLOD(input.positionCS, unity_LODFade.x);
 	
-	float4 base = GetBase(input.baseUV , input.detailUV);
+	float4 base = GetBase(config);
 	#if defined(_CLIPPING)
-		clip(base.a - GetCutoff(input.baseUV));
+		clip(base.a - GetCutoff(config));
 	#endif
 
 
 	Surface surface;
 	surface.position = input.positionWS;
-	surface.normal = NormalTangentToWorld( GetNormalTS(input.baseUV,input.detailUV), input.normalWS, input.tangentWS);
+	surface.normal = NormalTangentToWorld( GetNormalTS(config), input.normalWS, input.tangentWS);
 	surface.viewDirection = normalize(_WorldSpaceCameraPos - input.positionWS);
 	surface.depth = -TransformWorldToView(input.positionWS).z;
-	surface.occlusion = GetOcclusion(input.baseUV);
+	surface.occlusion = GetOcclusion(config);
 	surface.color = base.rgb;
 	surface.alpha = base.a;
-	surface.metallic = GetMetallic(input.baseUV);
-	surface.smoothness = GetSmoothness(input.baseUV, input.detailUV);
+	surface.metallic = GetMetallic(config);
+	surface.smoothness = GetSmoothness(config);
 	surface.dither = InterleavedGradientNoise(input.positionCS.xy, 0);
 	#if defined(_PREMULTIPLY_ALPHA)
 		BRDF brdf = GetBRDF(surface, true);
@@ -95,7 +96,7 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	#endif
 	GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
 	float3 color = GetLighting(surface, brdf, gi);
-	color += GetEmission(input.baseUV);
+	color += GetEmission(config);
 	return float4(color, surface.alpha);
 }
 
