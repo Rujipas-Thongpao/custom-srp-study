@@ -58,19 +58,13 @@ Varyings LitPassVertex (Attributes input) {
 	return output;
 }
 
-void ClipLOD(float2 positionCS, float fade){
-	#if defined(LOD_FADE_CROSSFADE)
-		float dither = InterleavedGradientNoise(positionCS.xy, 0);
-		dither *= fade < 0.0 ? 1 : -1; 
-		clip(fade + dither);
-	#endif
-}
 
 float4 LitPassFragment (Varyings input) : SV_TARGET {
 	UNITY_SETUP_INSTANCE_ID(input);
 
-	InputConfig config = GetInputConfig(input.baseUV, input.detailUV);
-	ClipLOD(input.positionCS, unity_LODFade.x);
+
+	InputConfig config = GetInputConfig(input.positionCS, input.baseUV, input.detailUV);
+	ClipLOD(config.fragment, unity_LODFade.x);
 	
 	float4 base = GetBase(config);
 	#if defined(_CLIPPING)
@@ -97,7 +91,8 @@ float4 LitPassFragment (Varyings input) : SV_TARGET {
 	GI gi = GetGI(GI_FRAGMENT_DATA(input), surface);
 	float3 color = GetLighting(surface, brdf, gi);
 	color += GetEmission(config);
-	return float4(color, surface.alpha);
+	return float4(config.fragment.depth.xxx/20.,1.);
+	//return float4(color, surface.alpha);
 }
 
 #endif

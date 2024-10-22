@@ -4,7 +4,6 @@
 
 TEXTURE2D(_PostFXSource);
 TEXTURE2D(_PostFXSource2);
-SAMPLER(sampler_linear_clamp);
 bool _useBicubic;
 float4 _BloomThreshold;
 float _BloomIntensity;

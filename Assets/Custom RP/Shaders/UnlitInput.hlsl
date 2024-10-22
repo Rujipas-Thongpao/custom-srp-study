@@ -15,14 +15,16 @@ struct InputConfig{
     float4 color;
     float3 flipbookUVB;
     bool isFlipbookBlending;
+    Fragment fragment;
 };
 
-InputConfig GetInputConfig(float2 baseUV){
+InputConfig GetInputConfig(float4 positionSS,float2 baseUV){
     InputConfig c;
     c.baseUV = baseUV;
     c.color = 1.;
     c.flipbookUVB = 0.;
     c.isFlipbookBlending = false;
+    c.fragment = GetFragment(positionSS);
     return c;
 }
 

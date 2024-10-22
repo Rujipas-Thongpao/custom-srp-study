@@ -32,6 +32,7 @@ CBUFFER_START(UnityPerDraw)
 	float4 unity_ProbesOcclusion;
 
 	float4 _ProjectionParams;
+	float4 unity_OrthoParams;
 
 CBUFFER_END
 
