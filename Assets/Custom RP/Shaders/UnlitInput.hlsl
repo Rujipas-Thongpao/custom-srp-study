@@ -41,7 +41,7 @@ float4 GetBase (InputConfig c) {
 	baseMap = lerp(baseMap, flipbookMap, c.flipbookUVB.z);
     }
     float4 color = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
-    return baseMap* color;
+    return baseMap* color * c.color;
 }
 float GetCutoff (InputConfig c) {
     return UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Cutoff);

@@ -5,7 +5,7 @@
 struct Attributes {
 	float3 positionOS : POSITION;
 #if defined(_FLIPBOOK_BLENDING)
-	float4 baseUV : TEXCOORDD0;
+	float4 baseUV : TEXCOORD0;
 	float flipbookBlend : TEXCOORD1;
 #else
 	float2 baseUV : TEXCOORD0;
@@ -35,8 +35,8 @@ Varyings UnlitPassVertex (Attributes input) {
 
 	output.baseUV.xy = TransformBaseUV(input.baseUV.xy);
 #if defined(_FLIPBOOK_BLENDING)
-	flipbookUVB.xy = TransformBaseUV(input.baseUV.w);
-	flipbookUVB.w = input.flipbookBlend;
+	output.flipbookUVB.xy = TransformBaseUV(input.baseUV.zw);
+	output.flipbookUVB.z = input.flipbookBlend;
 #endif
 
 #if defined(_VERTEX_COLORS)
