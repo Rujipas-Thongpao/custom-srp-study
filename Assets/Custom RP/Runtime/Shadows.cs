@@ -3,6 +3,9 @@ using UnityEngine.Rendering;
 
 public class Shadows
 {
+
+
+
     const string bufferName = "Shadows";
 
     const int maxShadowedDirLightCount = 4, maxShadowedOtherLightCount = 16,
