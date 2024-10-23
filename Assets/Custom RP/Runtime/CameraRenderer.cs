@@ -9,7 +9,9 @@ public partial class CameraRenderer
         unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
         litShaderTagId = new ShaderTagId("CustomLit");
 
-    static int frameBufferId = Shader.PropertyToID("_CameraFrameBuffer");
+    static int
+        colorBufferId = Shader.PropertyToID("_CameraColorAttachment"),
+        depthBufferId = Shader.PropertyToID("_CameraDepthAttachment");
 
     CommandBuffer buffer = new CommandBuffer
     {
@@ -62,7 +64,7 @@ public partial class CameraRenderer
         DrawGizmosBeforeFX();
         if (postFXStack.IsActive)
         {
-            postFXStack.Render(frameBufferId);
+            postFXStack.Render(colorBufferId);
         }
         DrawGizmosAfterFX();
 
@@ -91,12 +93,22 @@ public partial class CameraRenderer
         {
             // NOTE : we use this render texture as an immediate texture for post-processing and camera
 
+            // color buffer
             buffer.GetTemporaryRT(
-                frameBufferId, camera.pixelWidth, camera.pixelHeight, 32,
+                colorBufferId, camera.pixelWidth, camera.pixelHeight, 0,
                 FilterMode.Bilinear, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
             );
+            // depth buffer
+            buffer.GetTemporaryRT(
+                depthBufferId, camera.pixelWidth, camera.pixelHeight, 32,
+                FilterMode.Point, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
+            );
+            // ublic void SetRenderTarget( color,  colorLoadAction,  colorStoreAction,  depth,  depthLoadAction,  depthStoreAction);
             buffer.SetRenderTarget(
-                frameBufferId,
+                colorBufferId,
+                RenderBufferLoadAction.DontCare,
+                RenderBufferStoreAction.Store,
+                depthBufferId,
                 RenderBufferLoadAction.DontCare,
                 RenderBufferStoreAction.Store
             );
@@ -176,7 +188,8 @@ public partial class CameraRenderer
         lighting.Cleanup();
         if (postFXStack.IsActive)
         {
-            buffer.ReleaseTemporaryRT(frameBufferId);
+            buffer.ReleaseTemporaryRT(colorBufferId);
+            buffer.ReleaseTemporaryRT(depthBufferId);
         }
     }
 }
