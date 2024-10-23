@@ -64,7 +64,7 @@ float4 UnlitPassFragment (Varyings input) : SV_TARGET {
 	#if defined(_CLIPPING)
 		clip(base.a - GetCutoff(config));
 	#endif
-	return base;
+	return float4(config.fragment.bufferDepth.xxx/20.0, 1.);
 }
 
 #endif

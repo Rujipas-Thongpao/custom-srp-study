@@ -11,7 +11,11 @@ public partial class CameraRenderer
 
     static int
         colorBufferId = Shader.PropertyToID("_CameraColorAttachment"),
-        depthBufferId = Shader.PropertyToID("_CameraDepthAttachment");
+        depthBufferId = Shader.PropertyToID("_CameraDepthAttachment"),
+        depthTextureId = Shader.PropertyToID("_CameraDepthTexture"),
+        sourceTextureId = Shader.PropertyToID("_SourceTexture")
+
+        ;
 
     CommandBuffer buffer = new CommandBuffer
     {
@@ -24,11 +28,67 @@ public partial class CameraRenderer
 
     CullingResults cullingResults;
     bool allowHDR;
+    bool useDepthTexture, useIntermediateBuffer;
 
     Lighting lighting = new Lighting();
     PostFXStack postFXStack = new PostFXStack();
 
     ColorLUTResolution colorLUTResolution;
+
+    Material material;
+
+    public CameraRenderer(Shader _shader)
+    {
+        this.material = CoreUtils.CreateEngineMaterial(_shader);
+    }
+
+    void Setup()
+    {
+        context.SetupCameraProperties(camera);
+        CameraClearFlags flags = camera.clearFlags;
+
+
+        useIntermediateBuffer = postFXStack.IsActive || useDepthTexture;
+        if (useIntermediateBuffer)
+        {
+            // NOTE : we use this render texture as an immediate texture for post-processing and camera
+
+            // color buffer
+            buffer.GetTemporaryRT(
+                colorBufferId, camera.pixelWidth, camera.pixelHeight, 0,
+                FilterMode.Bilinear, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
+            );
+            // depth buffer
+            buffer.GetTemporaryRT(
+                depthBufferId, camera.pixelWidth, camera.pixelHeight, 32,
+                FilterMode.Point, RenderTextureFormat.Depth
+            );
+            // public void SetRenderTarget( color,  colorLoadAction,  colorStoreAction,  depth,  depthLoadAction,  depthStoreAction);
+            buffer.SetRenderTarget(
+                colorBufferId,
+                RenderBufferLoadAction.DontCare,
+                RenderBufferStoreAction.Store,
+                depthBufferId,
+                RenderBufferLoadAction.DontCare,
+                RenderBufferStoreAction.Store
+            );
+
+            if (flags > CameraClearFlags.Color)
+            {
+                flags = CameraClearFlags.Color;
+            }
+        }
+
+        buffer.ClearRenderTarget(
+            flags <= CameraClearFlags.Depth,
+            flags <= CameraClearFlags.Color,
+            flags == CameraClearFlags.Color ?
+                camera.backgroundColor.linear : Color.clear
+        );
+
+        buffer.BeginSample(SampleName);
+        ExecuteBuffer();
+    }
 
     public void Render(
         ScriptableRenderContext _context, Camera _camera,
@@ -41,6 +101,7 @@ public partial class CameraRenderer
         this.camera = _camera;
         this.allowHDR = _allowHDR && camera.allowHDR;
         this.colorLUTResolution = _lutRes;
+        this.useDepthTexture = true;
 
         // Set up
         PrepareBuffer();
@@ -66,11 +127,28 @@ public partial class CameraRenderer
         {
             postFXStack.Render(colorBufferId);
         }
+        else if (useIntermediateBuffer) // if copy depthbuffer or postfx active
+        {
+            Draw(colorBufferId, BuiltinRenderTextureType.CameraTarget);
+            ExecuteBuffer();
+        }
         DrawGizmosAfterFX();
 
         Cleanup();
 
         Submit();
+    }
+
+    // Draw texture from _from to render in _to
+    void Draw(RenderTargetIdentifier _from, RenderTargetIdentifier _to)
+    {
+        buffer.SetGlobalTexture(sourceTextureId, _from); // set source texture to be _from
+        buffer.SetRenderTarget(_to, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store); // Change destination of render to _to instead of camera
+        buffer.DrawProcedural( // draw first pass
+            Matrix4x4.identity, this.material, 0,
+            MeshTopology.Triangles, 3
+        );
+
     }
 
     bool Cull(float maxShadowDistance)
@@ -84,52 +162,6 @@ public partial class CameraRenderer
         return false;
     }
 
-    void Setup()
-    {
-        context.SetupCameraProperties(camera);
-        CameraClearFlags flags = camera.clearFlags;
-
-        if (postFXStack.IsActive)
-        {
-            // NOTE : we use this render texture as an immediate texture for post-processing and camera
-
-            // color buffer
-            buffer.GetTemporaryRT(
-                colorBufferId, camera.pixelWidth, camera.pixelHeight, 0,
-                FilterMode.Bilinear, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
-            );
-            // depth buffer
-            buffer.GetTemporaryRT(
-                depthBufferId, camera.pixelWidth, camera.pixelHeight, 32,
-                FilterMode.Point, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default
-            );
-            // ublic void SetRenderTarget( color,  colorLoadAction,  colorStoreAction,  depth,  depthLoadAction,  depthStoreAction);
-            buffer.SetRenderTarget(
-                colorBufferId,
-                RenderBufferLoadAction.DontCare,
-                RenderBufferStoreAction.Store,
-                depthBufferId,
-                RenderBufferLoadAction.DontCare,
-                RenderBufferStoreAction.Store
-            );
-
-            // 
-            if (flags > CameraClearFlags.Color)
-            {
-                flags = CameraClearFlags.Color;
-            }
-        }
-
-        buffer.ClearRenderTarget(
-            flags <= CameraClearFlags.Depth,
-            flags <= CameraClearFlags.Color,
-            flags == CameraClearFlags.Color ?
-                camera.backgroundColor.linear : Color.clear
-        );
-
-        buffer.BeginSample(SampleName);
-        ExecuteBuffer();
-    }
 
     void Submit()
     {
@@ -174,6 +206,10 @@ public partial class CameraRenderer
 
         context.DrawSkybox(camera);
 
+        CopyAttachments();
+
+
+
         sortingSettings.criteria = SortingCriteria.CommonTransparent;
         drawingSettings.sortingSettings = sortingSettings;
         filteringSettings.renderQueueRange = RenderQueueRange.transparent;
@@ -183,13 +219,33 @@ public partial class CameraRenderer
         );
     }
 
+
+    void CopyAttachments()
+    {
+        if (!useDepthTexture) return;
+        buffer.GetTemporaryRT(depthTextureId, camera.pixelWidth, camera.pixelHeight,
+                32, FilterMode.Point, RenderTextureFormat.Depth);
+        buffer.CopyTexture(depthBufferId, depthTextureId);
+        ExecuteBuffer();
+    }
+
     void Cleanup()
     {
         lighting.Cleanup();
-        if (postFXStack.IsActive)
+        if (useIntermediateBuffer)
         {
             buffer.ReleaseTemporaryRT(colorBufferId);
             buffer.ReleaseTemporaryRT(depthBufferId);
+            if (useDepthTexture)
+            {
+                buffer.ReleaseTemporaryRT(depthTextureId);
+
+            }
         }
+    }
+
+    public void Dispose()
+    {
+        CoreUtils.Destroy(material);
     }
 }

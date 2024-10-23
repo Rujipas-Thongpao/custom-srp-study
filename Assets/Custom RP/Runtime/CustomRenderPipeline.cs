@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 public partial class CustomRenderPipeline : RenderPipeline
 {
 
-    CameraRenderer renderer = new CameraRenderer();
+    CameraRenderer renderer;
 
     bool useDynamicBatching, useGPUInstancing;
 
@@ -19,7 +19,7 @@ public partial class CustomRenderPipeline : RenderPipeline
     public CustomRenderPipeline(
         bool useDynamicBatching, bool useGPUInstancing, bool useSRPBatcher,
         ShadowSettings shadowSettings, PostFXSettings _postFxSettings, bool _allowHDR,
-        ColorLUTResolution _lutRes
+        ColorLUTResolution _lutRes, Shader _cameraRendererShader
     )
     {
         InitializeForEditor();
@@ -29,6 +29,7 @@ public partial class CustomRenderPipeline : RenderPipeline
         this.postFXSettings = _postFxSettings;
         this.allowHDR = _allowHDR;
         this.colorLUTResolution = _lutRes;
+        this.renderer = new CameraRenderer(_cameraRendererShader);
         GraphicsSettings.useScriptableRenderPipelineBatching = useSRPBatcher;
         GraphicsSettings.lightsUseLinearIntensity = true;
     }
