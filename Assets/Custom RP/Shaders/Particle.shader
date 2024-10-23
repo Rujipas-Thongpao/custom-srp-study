@@ -7,6 +7,10 @@
 		[Toggle(_CLIPPING)] _Clipping ("Alpha Clipping", Float) = 0
 		[Toggle(_VERTEX_COLORS)] _VertexColor("Vertex Color", Float) = 0
 		[Toggle(_FLIPBOOK_BLENDING)] _FlipbookBlending ("Flipbook blending", Float) = 0
+		[Toggle(_NEAR_FADE)] _NearFade("Near Fade", Float) = 1
+		_NearFadeDistance("Near Fade Distance", Range(0.01, 10.)) = 1
+		_NearFadeRange("Near Fade Range", Range(0.01, 10.)) = 1
+
 		[KeywordEnum(On, Clip, Dither, Off)] _Shadows ("Shadows", Float) = 0
 
 		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1
@@ -29,6 +33,7 @@
 			#pragma shader_feature _CLIPPING
 			#pragma shader_feature _VERTEX_COLORS
 			#pragma shader_feature _FLIPBOOK_BLENDING
+			#pragma shader_feature _NEAR_FADE 
 			#pragma multi_compile_instancing
 
 			#pragma vertex UnlitPassVertex
