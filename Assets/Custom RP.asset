@@ -31,5 +31,10 @@ MonoBehaviour:
       cascadeFade: 0.1
       cascadeBlend: 0
   postFXSettings: {fileID: 11400000, guid: 093a0afc74eaea049862230e1157bc62, type: 2}
-  hdr: 1
   colorLUTResolution: 32
+  cameraRendererShader: {fileID: 4800000, guid: ca800ff7045290d4c964f7386fbba462,
+    type: 3}
+  cameraBufferSettings:
+    allowHDR: 1
+    copyDepth: 1
+    copyDepthReflections: 1

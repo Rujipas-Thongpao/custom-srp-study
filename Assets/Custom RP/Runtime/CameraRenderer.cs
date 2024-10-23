@@ -14,7 +14,6 @@ public partial class CameraRenderer
         depthBufferId = Shader.PropertyToID("_CameraDepthAttachment"),
         depthTextureId = Shader.PropertyToID("_CameraDepthTexture"),
         sourceTextureId = Shader.PropertyToID("_SourceTexture")
-
         ;
 
     CommandBuffer buffer = new CommandBuffer
@@ -36,10 +35,20 @@ public partial class CameraRenderer
     ColorLUTResolution colorLUTResolution;
 
     Material material;
+    CameraBufferSettings cameraBufferSettings;
+    Texture2D missingTexture;
 
     public CameraRenderer(Shader _shader)
     {
         this.material = CoreUtils.CreateEngineMaterial(_shader);
+        missingTexture = new Texture2D(1, 1)
+        {
+            hideFlags = HideFlags.HideAndDontSave,
+            name = "missing"
+        };
+
+        missingTexture.SetPixel(0, 0, Color.white * 0.5f);
+        missingTexture.Apply(true, true);
     }
 
     void Setup()
@@ -87,21 +96,31 @@ public partial class CameraRenderer
         );
 
         buffer.BeginSample(SampleName);
+        buffer.SetGlobalTexture(depthTextureId, missingTexture);
         ExecuteBuffer();
     }
 
     public void Render(
         ScriptableRenderContext _context, Camera _camera,
         bool _useDynamicBatching, bool _useGPUInstancing,
-        ShadowSettings _shadowSettings, PostFXSettings _postFxSettings, bool _allowHDR,
-        ColorLUTResolution _lutRes
+        ShadowSettings _shadowSettings, PostFXSettings _postFxSettings,
+        ColorLUTResolution _lutRes, CameraBufferSettings _cameraBufferSettings
     )
     {
+
+        this.cameraBufferSettings = _cameraBufferSettings;
         this.context = _context;
         this.camera = _camera;
-        this.allowHDR = _allowHDR && camera.allowHDR;
+        if (camera.cameraType == CameraType.Reflection)
+        {
+            useDepthTexture = _cameraBufferSettings.copyDepthReflections;
+        }
+        else
+        {
+            useDepthTexture = _cameraBufferSettings.copyDepth;
+        }
+        this.allowHDR = this.cameraBufferSettings.allowHDR && camera.allowHDR;
         this.colorLUTResolution = _lutRes;
-        this.useDepthTexture = true;
 
         // Set up
         PrepareBuffer();
@@ -115,7 +134,7 @@ public partial class CameraRenderer
         ExecuteBuffer();
 
         lighting.Setup(_context, cullingResults, _shadowSettings);
-        postFXStack.Setup(_context, _camera, _postFxSettings, _allowHDR, _lutRes);
+        postFXStack.Setup(_context, _camera, _postFxSettings, true, _lutRes);
         buffer.EndSample(SampleName);
         Setup();
 
@@ -144,7 +163,7 @@ public partial class CameraRenderer
     {
         buffer.SetGlobalTexture(sourceTextureId, _from); // set source texture to be _from
         buffer.SetRenderTarget(_to, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store); // Change destination of render to _to instead of camera
-        buffer.DrawProcedural( // draw first pass
+        buffer.DrawProcedural( // use camera renderer material to render this
             Matrix4x4.identity, this.material, 0,
             MeshTopology.Triangles, 3
         );

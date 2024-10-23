@@ -59,12 +59,14 @@ float4 UnlitPassFragment (Varyings input) : SV_TARGET {
 	#if defined(_NEAR_FADE)
 		config.isNearFade = true;
 	#endif
-
+	#if defined(_SOFT_PARTICLE)
+		config.isSoftParticle = true;
+	#endif
 	float4 base = GetBase(config) ;
 	#if defined(_CLIPPING)
 		clip(base.a - GetCutoff(config));
 	#endif
-	return float4(config.fragment.bufferDepth.xxx/20.0, 1.);
+	return base;
 }
 
 #endif
