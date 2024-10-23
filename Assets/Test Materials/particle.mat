@@ -13,6 +13,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _FLIPBOOK_BLENDING
+  - _NEAR_FADE
   - _VERTEX_COLORS
   m_InvalidKeywords:
   - _SHADOWS_OFF
@@ -81,6 +82,9 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
+    - _NearFade: 1
+    - _NearFadeDistance: 3.47
+    - _NearFadeRange: 0.01
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _Shadows: 3

@@ -50,11 +50,10 @@ float4 GetBase (InputConfig c) {
 	baseMap = lerp(baseMap, flipbookMap, c.flipbookUVB.z);
     }
     if(c.isNearFade){
-
 	float nearFadeDistance = INPUT_Prop(_NearFadeDistance);
 	float nearFadeRange = INPUT_Prop(_NearFadeRange);
-	float nearFadeAttenuation = (c.fragment.depth - nearFadeDistance)/nearFadeRange;
-	baseMap.a *= 1.;
+	float nearFadeAttenuation = saturate((c.fragment.depth - nearFadeDistance)/nearFadeRange);
+	baseMap.a *= nearFadeAttenuation;
     }
     float4 color = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _BaseColor);
     return baseMap* color * c.color;

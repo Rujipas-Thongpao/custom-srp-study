@@ -6727,7 +6727,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 1.875e-42, z: 5.934e-42, w: 0}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 4e-45, z: 5.035e-42, w: 1.3224311e-38}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -9310,7 +9310,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 12.05
   m_Depth: -1
   m_CullingMask:
@@ -9335,13 +9335,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.10943427, y: 0.87942547, z: -0.24472553, w: 0.3933758}
-  m_LocalPosition: {x: -8.9, y: 9.19, z: 9.69}
+  m_LocalRotation: {x: 0.0334385, y: 0.95567393, z: -0.2668328, w: 0.11987318}
+  m_LocalPosition: {x: -4.1, y: 9.19, z: 7.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 31.1, y: 131.8, z: -0.004}
+  m_LocalEulerAnglesHint: {x: 31.2, y: 165.7, z: -0.004}
 --- !u!1 &1010569056
 GameObject:
   m_ObjectHideFlags: 0
@@ -11820,7 +11820,7 @@ ParticleSystem:
   looping: 1
   prewarm: 0
   playOnAwake: 1
-  useUnscaledTime: 0
+  useUnscaledTime: 1
   autoRandomSeed: 1
   startDelay:
     serializedVersion: 2
