@@ -309,9 +309,9 @@ float GetOtherShadowAttenuation( OtherShadowData other, ShadowData global, Surfa
 	}
 	else{
 		shadow = GetOtherShadow(other, global, surfaceWS);
-		shadow = MixBakedAndRealtimeShadows(
-			global, shadow, other.shadowMaskChannel, other.strength
-		);
+		//shadow = MixBakedAndRealtimeShadows(
+		//	global, shadow, other.shadowMaskChannel, other.strength
+		//);
 	}
 	return shadow;
 }

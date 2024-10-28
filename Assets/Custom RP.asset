@@ -16,22 +16,22 @@ MonoBehaviour:
   useGPUInstancing: 1
   useSRPBatcher: 1
   shadows:
-    maxDistance: 29.9
-    distanceFade: 0.1
+    maxDistance: 31.5
+    distanceFade: 0.308
     other:
-      atlasSize: 1024
+      atlasSize: 8192
       filter: 3
     directional:
-      atlasSize: 2048
-      filter: 0
+      atlasSize: 8192
+      filter: 3
       cascadeCount: 4
       cascadeRatio1: 0.3
       cascadeRatio2: 0.4
       cascadeRatio3: 0.5
       cascadeFade: 0.1
-      cascadeBlend: 0
+      cascadeBlend: 1
   postFXSettings: {fileID: 11400000, guid: 093a0afc74eaea049862230e1157bc62, type: 2}
-  colorLUTResolution: 32
+  colorLUTResolution: 64
   cameraRendererShader: {fileID: 4800000, guid: ca800ff7045290d4c964f7386fbba462,
     type: 3}
   cameraBufferSettings:

@@ -420,7 +420,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.6350386, g: 0.9716981, b: 0.59126914, a: 1}
   alphaCutoff: 0.5
-  metallic: 0.962
+  metallic: 1
   smoothness: 0.5
   emissionColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!135 &13496618
@@ -6727,7 +6727,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.637e-42, y: 2.2e-44, z: 0, w: 9.3276e-41}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 3.2e-44, z: 1.1264e-41, w: 4.1003012e-19}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
@@ -11810,7 +11810,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1246677915}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 7.39
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -12639,7 +12639,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5.63
+      scalar: 14.62
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -16534,7 +16534,7 @@ Transform:
   m_GameObject: {fileID: 1246677915}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -2.61, y: 3.23, z: -3.24}
+  m_LocalPosition: {x: 1.46, y: 4.93, z: 0.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16788,7 +16788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseColor: {r: 0.84474796, g: 0.759434, b: 1, a: 1}
   alphaCutoff: 0.5
-  metallic: 0
+  metallic: 1
   smoothness: 0.5
   emissionColor: {r: 0.16037747, g: 0.33121634, b: 2.0000012, a: 1}
 --- !u!65 &1275150259
@@ -19941,7 +19941,7 @@ Transform:
   m_GameObject: {fileID: 1653347227}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.04, y: 0.5, z: -0.04}
+  m_LocalPosition: {x: -1.118, y: 0.5, z: 1.37}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
