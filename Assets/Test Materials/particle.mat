@@ -12,6 +12,7 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
+  - _DISTORTION
   - _FLIPBOOK_BLENDING
   - _NEAR_FADE
   - _SOFT_PARTICLE
@@ -50,6 +51,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _DistortionMap:
+        m_Texture: {fileID: 2800000, guid: 13674d94e6513074687e472afd600826, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -76,6 +81,8 @@ Material:
     - _Clipping: 0
     - _Cutoff: 0
     - _DetailNormalMapScale: 1
+    - _Distortion: 1
+    - _DistortionStrength: 1.39
     - _DstBlend: 10
     - _FlipbookBlending: 1
     - _GlossMapScale: 1

@@ -49,6 +49,12 @@ Varyings UnlitPassVertex (Attributes input) {
 float4 UnlitPassFragment (Varyings input) : SV_TARGET {
 	UNITY_SETUP_INSTANCE_ID(input);
 	InputConfig config = GetInputConfig(input.positionCS, input.baseUV);
+
+	float4 base = GetBase(config) ;
+	#if defined(_CLIPPING)
+		clip(base.a - GetCutoff(config));
+	#endif
+
 	#if defined(_VERTEX_COLORS)
 		config.color = input.color;
 	#endif
@@ -62,9 +68,10 @@ float4 UnlitPassFragment (Varyings input) : SV_TARGET {
 	#if defined(_SOFT_PARTICLE)
 		config.isSoftParticle = true;
 	#endif
-	float4 base = GetBase(config) ;
-	#if defined(_CLIPPING)
-		clip(base.a - GetCutoff(config));
+	#if defined(_DISTORTION)
+		float2 dis = GetDistortion(config) * base.a;
+		float3 col= GetBufferColor(config.fragment.screenUV, dis).rgb;
+		base.rgb = lerp(col,base.rgb, saturate( base.a -GetDistortionBlend(config))).rgb;
 	#endif
 	return base;
 }

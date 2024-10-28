@@ -16,6 +16,11 @@
 		_SoftParticleDistance("Soft Particle Distance", Range(0.01, 10.)) = 1
 		_SoftParticleRange("Soft Particle Range", Range(0.01, 10.)) = 1
 
+		[Toggle(_DISTORTION)] _Distortion ("Distortion", Float) = 0
+		[NoScaleOffset] _DistortionMap("Distortion Map", 2D) = "bumb"{}
+		_DistortionStrength("Distortion Strength", Range(0.01, 1.)) = .1
+		_DistortionBlend("Distortion Blend", Range(0.01, 1.)) = .1
+
 		[KeywordEnum(On, Clip, Dither, Off)] _Shadows ("Shadows", Float) = 0
 
 		[Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Src Blend", Float) = 1
@@ -40,6 +45,7 @@
 			#pragma shader_feature _FLIPBOOK_BLENDING
 			#pragma shader_feature _NEAR_FADE 
 			#pragma shader_feature _SOFT_PARTICLE
+			#pragma shader_feature _DISTORTION 
 			#pragma multi_compile_instancing
 
 			#pragma vertex UnlitPassVertex
