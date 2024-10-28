@@ -13,6 +13,7 @@ public partial class CameraRenderer
         colorBufferId = Shader.PropertyToID("_CameraColorAttachment"),
         depthBufferId = Shader.PropertyToID("_CameraDepthAttachment"),
         depthTextureId = Shader.PropertyToID("_CameraDepthTexture"),
+        colorTextureId = Shader.PropertyToID("_CameraColorTexture"),
         sourceTextureId = Shader.PropertyToID("_SourceTexture")
         ;
 
@@ -27,7 +28,8 @@ public partial class CameraRenderer
 
     CullingResults cullingResults;
     bool allowHDR;
-    bool useDepthTexture, useIntermediateBuffer;
+    bool useDepthTexture, useColorTexture, useIntermediateBuffer;
+
 
     Lighting lighting = new Lighting();
     PostFXStack postFXStack = new PostFXStack();
@@ -97,6 +99,7 @@ public partial class CameraRenderer
 
         buffer.BeginSample(SampleName);
         buffer.SetGlobalTexture(depthTextureId, missingTexture);
+        buffer.SetGlobalTexture(colorTextureId, missingTexture);
         ExecuteBuffer();
     }
 
@@ -119,6 +122,7 @@ public partial class CameraRenderer
         {
             useDepthTexture = _cameraBufferSettings.copyDepth;
         }
+        useColorTexture = _cameraBufferSettings.copyColor;
         this.allowHDR = this.cameraBufferSettings.allowHDR && camera.allowHDR;
         this.colorLUTResolution = _lutRes;
 
@@ -182,18 +186,6 @@ public partial class CameraRenderer
     }
 
 
-    void Submit()
-    {
-        buffer.EndSample(SampleName);
-        ExecuteBuffer();
-        context.Submit();
-    }
-
-    void ExecuteBuffer()
-    {
-        context.ExecuteCommandBuffer(buffer);
-        buffer.Clear();
-    }
 
     void DrawVisibleGeometry(bool useDynamicBatching, bool useGPUInstancing)
     {
@@ -241,10 +233,20 @@ public partial class CameraRenderer
 
     void CopyAttachments()
     {
-        if (!useDepthTexture) return;
-        buffer.GetTemporaryRT(depthTextureId, camera.pixelWidth, camera.pixelHeight,
-                32, FilterMode.Point, RenderTextureFormat.Depth);
-        buffer.CopyTexture(depthBufferId, depthTextureId);
+        if (useDepthTexture)
+        {
+            buffer.GetTemporaryRT(depthTextureId, camera.pixelWidth, camera.pixelHeight,
+                    32, FilterMode.Point, RenderTextureFormat.Depth);
+            buffer.CopyTexture(depthBufferId, depthTextureId);
+        }
+
+        if (useColorTexture)
+        {
+            buffer.GetTemporaryRT(colorTextureId, camera.pixelWidth, camera.pixelHeight,
+                    0, FilterMode.Point, allowHDR ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default);
+            buffer.CopyTexture(colorBufferId, colorTextureId);
+        }
+
         ExecuteBuffer();
     }
 
@@ -258,6 +260,7 @@ public partial class CameraRenderer
             if (useDepthTexture)
             {
                 buffer.ReleaseTemporaryRT(depthTextureId);
+                buffer.ReleaseTemporaryRT(colorTextureId);
 
             }
         }
@@ -266,5 +269,18 @@ public partial class CameraRenderer
     public void Dispose()
     {
         CoreUtils.Destroy(material);
+    }
+
+    void Submit()
+    {
+        buffer.EndSample(SampleName);
+        ExecuteBuffer();
+        context.Submit();
+    }
+
+    void ExecuteBuffer()
+    {
+        context.ExecuteCommandBuffer(buffer);
+        buffer.Clear();
     }
 }

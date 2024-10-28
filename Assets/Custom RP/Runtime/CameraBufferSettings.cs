@@ -2,5 +2,5 @@
 public class CameraBufferSettings
 {
     public bool allowHDR;
-    public bool copyDepth, copyDepthReflections;
+    public bool copyDepth, copyColor, copyDepthReflections;
 }

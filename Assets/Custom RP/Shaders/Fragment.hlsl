@@ -2,6 +2,7 @@
 #define FRAGMENT_INCLUDED
 
 TEXTURE2D(_CameraDepthTexture);
+TEXTURE2D(_CameraColorTexture);
 
 struct Fragment{
     float2 positionSS;
@@ -22,6 +23,12 @@ Fragment GetFragment(float4 positionSS){
 	LinearEyeDepth(f.bufferDepth, _ZBufferParams);
     return f;
 }
+
+float4 GetBufferColor(float2 screenUV, float2 offset = float2(0.,0.)){
+    float2 uv = screenUV + offset;
+    return SAMPLE_TEXTURE2D_LOD(_CameraColorTexture,  sampler_point_clamp, uv, 0 );
+}
+
 
 
 #endif 
