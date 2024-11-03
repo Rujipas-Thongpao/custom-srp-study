@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: cbc99255fe86b594abc92295a73fe9c5, type: 3}
   bloom:
-    maxIterations: 2
+    maxIterations: 3
     downscaleLimit: 1
     useBicubic: 1
-    threshold: 2.27
-    thresholdKnee: 1
-    intensity: 1
-    mode: 1
-    scatter: 0.26
-  toneMapping:
+    threshold: 1.7
+    thresholdKnee: 0.464
+    intensity: 0.21
     mode: 0
+    scatter: 0.564
+  toneMapping:
+    mode: 1
   colorAdjustments:
-    postExposure: 0
-    contrast: 0
+    postExposure: 1.05
+    contrast: -52
     colorFilter: {r: 1, g: 1, b: 1, a: 1}
     hueShift: 0
     saturation: 0
