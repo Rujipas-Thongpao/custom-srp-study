@@ -17,35 +17,35 @@ MonoBehaviour:
     maxIterations: 3
     downscaleLimit: 1
     useBicubic: 1
-    threshold: 1.7
-    thresholdKnee: 0.464
-    intensity: 0.21
+    threshold: 1.62
+    thresholdKnee: 0.635
+    intensity: 1.5
     mode: 0
-    scatter: 0.564
+    scatter: 1
   toneMapping:
     mode: 1
   colorAdjustments:
-    postExposure: 1.05
-    contrast: -52
+    postExposure: 0.84
+    contrast: -53
     colorFilter: {r: 1, g: 1, b: 1, a: 1}
     hueShift: 0
-    saturation: 0
+    saturation: -8
   whiteBalance:
     temperature: 0
     tint: 0
   splitTone:
-    shadows: {r: 0.37019405, g: 0.42381114, b: 0.5566038, a: 1}
-    highlights: {r: 1, g: 0.6462264, b: 0.6462264, a: 1}
-    balance: 0
+    shadows: {r: 0.3938679, g: 0.4248231, b: 0.5, a: 1}
+    highlights: {r: 1, g: 0.8393456, b: 0.64705884, a: 1}
+    balance: -1
   channelMixer:
     red: {x: 1, y: 0, z: 0}
     green: {x: 0, y: 1, z: 0}
     blue: {x: 0, y: 0, z: 1}
   smh:
-    shadows: {r: 0.514151, g: 0.690626, b: 1, a: 1}
-    midtones: {r: 1, g: 0.8066038, b: 0.8066038, a: 1}
-    highlights: {r: 1, g: 0.873793, b: 0.8254717, a: 1}
-    shadowsStart: 0
-    shadowsEnd: 0.3
-    highlightsStart: 0.55
-    highlightsEnd: 1
+    shadows: {r: 0.3254717, g: 0.6690191, b: 1, a: 1}
+    midtones: {r: 1, g: 0.8915094, b: 0.8948684, a: 1}
+    highlights: {r: 1, g: 0.92819554, b: 0.8352941, a: 1}
+    shadowsStart: 0.08
+    shadowsEnd: 0.25
+    highlightsStart: 0.6
+    highlightsEnd: 1.42
