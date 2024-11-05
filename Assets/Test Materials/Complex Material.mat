@@ -82,23 +82,23 @@ Material:
     - _BumpScale: 1
     - _Clipping: 0
     - _Cutoff: 0.55
-    - _DetailAlbedo: 0
+    - _DetailAlbedo: 0.43
     - _DetailNormalMapScale: 1
-    - _DetailNormalScale: 0.477
-    - _DetailSmoothness: 0.56
+    - _DetailNormalScale: 1
+    - _DetailSmoothness: 0.82
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Metallic: 0.911
+    - _Metallic: 1
     - _Mode: 0
     - _NormalScale: 1
-    - _OcclusionStrength: 0
+    - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PremulAlpha: 0
     - _ReceiveShadows: 1
     - _Shadows: 0
-    - _Smoothness: 0.309
+    - _Smoothness: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
