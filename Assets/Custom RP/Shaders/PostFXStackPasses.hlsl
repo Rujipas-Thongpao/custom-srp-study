@@ -25,9 +25,42 @@ float _ColorGradingLUTInLogId;
 
 float4 _PostFXSource_TexelSize; // texel Size of _PostFXSource which is assign by unity's black magic
 
+float4 GetSource(float2 screenUV){
+    return SAMPLE_TEXTURE2D_LOD(_PostFXSource, sampler_linear_clamp, screenUV,0);
+}
+
+float4 GetSource2(float2 screenUV){
+    return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, sampler_linear_clamp, screenUV,0);
+}
+
+
+float4 GetSourceBicubic(float2 screenUV){
+    return SampleTexture2DBicubic(
+	TEXTURE2D_ARGS(_PostFXSource, sampler_linear_clamp), 
+	screenUV,
+	_PostFXSource_TexelSize.zwxy
+	, 1.0, 0.0
+    );
+}
 
 float3 GrainNoise(float3 col, float2 screenUV, float powFactor =10 , float opacity = .008){
     return col +  pow(hash(screenUV),powFactor) * opacity;
+}
+
+float3 Chromatic(float2 screenUV, float2 offsetR, float2 offsetG, float2 offsetB){
+    float2 RUV  = screenUV + offsetR;
+    float2 GUV  = screenUV + offsetG;
+    float2 BUV  = screenUV + offsetB;
+    return float3(GetSource(RUV).x , GetSource(GUV).y , GetSource(BUV).z);
+
+}
+
+
+float3 Vignetting(float3 color, float2 screenUV, float scale=3){
+    //float2 pA = screenUV;
+    //float2 pB = float2(0.5,0.5);
+    float dis = pow(1-DistanceSquared2D(screenUV,0.5),scale);
+    return color * dis;
 }
 
 
@@ -125,23 +158,6 @@ float3 ApplyColorGradingLUT(float3 color){
 }
 
 
-float4 GetSource(float2 screenUV){
-    return SAMPLE_TEXTURE2D_LOD(_PostFXSource, sampler_linear_clamp, screenUV,0);
-}
-
-float4 GetSource2(float2 screenUV){
-    return SAMPLE_TEXTURE2D_LOD(_PostFXSource2, sampler_linear_clamp, screenUV,0);
-}
-
-
-float4 GetSourceBicubic(float2 screenUV){
-    return SampleTexture2DBicubic(
-	TEXTURE2D_ARGS(_PostFXSource, sampler_linear_clamp), 
-	screenUV,
-	_PostFXSource_TexelSize.zwxy
-	, 1.0, 0.0
-    );
-}
 
 
 struct Varyings {
@@ -315,7 +331,20 @@ float4 ToneMappingACESPassFragment(Varyings input)  : SV_TARGET{
 
 float4 FinalPassFragment(Varyings input): SV_TARGET{
     float4 color = GetSource(input.screenUV);
+
+    //chromatic abberation
+    color.rgb = Chromatic(input.screenUV,
+	     float2(0.003,0.),
+	     float2(0.0,0.0),
+	     float2(0.,0.003)
+	  );
+
+    // Vignetting
+    color.rgb = Vignetting(color.rgb,input.screenUV,3);
+
+    // LUT
     color.rgb = ApplyColorGradingLUT(color);
+
     // Grain Noise
     color.rgb = GrainNoise(color.rgb, input.screenUV);
 

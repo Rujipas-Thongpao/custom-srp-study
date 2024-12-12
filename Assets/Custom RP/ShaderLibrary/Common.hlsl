@@ -48,6 +48,10 @@ float DistanceSquared(float3 pA, float3 pB) {
 	return dot(pA - pB, pA - pB);
 }
 
+float DistanceSquared2D(float2 pA, float2 pB) {
+	return dot(pA - pB, pA - pB);
+}
+
 float3 DecodeNormal (float4 sample, float scale) {
 	#if defined(UNITY_NO_DXT5nm)
 	    return normalize(UnpackNormalRGB(sample, scale));
