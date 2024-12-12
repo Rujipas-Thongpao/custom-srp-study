@@ -75,4 +75,11 @@ void ClipLOD(Fragment fragment, float fade){
 	#endif
 }
 
+float hash(float2 p) {
+	p = float2(dot(p, float2(127.1, 311.7)),
+		dot(p, float2(269.5, 183.3)));
+	return frac(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+}
+
+
 #endif

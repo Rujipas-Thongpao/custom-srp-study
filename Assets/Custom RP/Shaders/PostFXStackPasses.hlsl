@@ -21,8 +21,15 @@ float _ColorGradingLUTInLogId;
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Filtering.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+#include "../ShaderLibrary/Common.hlsl"
 
 float4 _PostFXSource_TexelSize; // texel Size of _PostFXSource which is assign by unity's black magic
+
+
+float3 GrainNoise(float3 col, float2 screenUV, float powFactor =10 , float opacity = .008){
+    return col +  pow(hash(screenUV),powFactor) * opacity;
+}
+
 
 float4 GetSourceTexelSize(){
     return _PostFXSource_TexelSize;
@@ -309,7 +316,12 @@ float4 ToneMappingACESPassFragment(Varyings input)  : SV_TARGET{
 float4 FinalPassFragment(Varyings input): SV_TARGET{
     float4 color = GetSource(input.screenUV);
     color.rgb = ApplyColorGradingLUT(color);
+    // Grain Noise
+    color.rgb = GrainNoise(color.rgb, input.screenUV);
+
     return color;
 }
+
+
 
 #endif
