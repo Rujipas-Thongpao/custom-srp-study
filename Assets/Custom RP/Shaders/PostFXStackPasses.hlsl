@@ -43,14 +43,15 @@ float4 GetSourceBicubic(float2 screenUV){
     );
 }
 
-float3 GrainNoise(float3 col, float2 screenUV, float powFactor =10 , float opacity = .008){
+float3 GrainNoise(float3 col, float2 screenUV, float powFactor =100 , float opacity = .08){
     return col +  pow(hash(screenUV),powFactor) * opacity;
 }
 
-float3 Chromatic(float2 screenUV, float2 offsetR, float2 offsetG, float2 offsetB){
-    float2 RUV  = screenUV + offsetR;
-    float2 GUV  = screenUV + offsetG;
-    float2 BUV  = screenUV + offsetB;
+float3 Chromatic(float2 screenUV, float2 offsetR, float2 offsetG, float2 offsetB, float scale = 1.){
+    float dis = pow(DistanceSquared2D(screenUV,0.5),scale)+1;
+    float2 RUV  = screenUV + offsetR * dis*scale;
+    float2 GUV  = screenUV + offsetG * dis*scale;
+    float2 BUV  = screenUV + offsetB * dis*scale;
     return float3(GetSource(RUV).x , GetSource(GUV).y , GetSource(BUV).z);
 
 }
@@ -329,24 +330,29 @@ float4 ToneMappingACESPassFragment(Varyings input)  : SV_TARGET{
     return float4(color,0.);
 }
 
+float4 FilmGrainFragment(Varyings input) : SV_TARGET{
+    float3 color = GetSource(input.screenUV);
+    color = GrainNoise(color.rgb, input.screenUV);
+    return float4(color,0.);
+}
+
 float4 FinalPassFragment(Varyings input): SV_TARGET{
     float4 color = GetSource(input.screenUV);
 
     //chromatic abberation
     color.rgb = Chromatic(input.screenUV,
-	     float2(0.003,0.),
-	     float2(0.0,0.0),
-	     float2(0.,0.003)
-	  );
+	   float2(0.003,0.),
+	   float2(0.0,0.0),
+	   float2(0.,0.003),
+	   1
+	);
 
     // Vignetting
     color.rgb = Vignetting(color.rgb,input.screenUV,3);
-
+    // Grain noise
+    color.rgb = GrainNoise(color.rgb, input.screenUV,8,.08);
     // LUT
     color.rgb = ApplyColorGradingLUT(color);
-
-    // Grain Noise
-    color.rgb = GrainNoise(color.rgb, input.screenUV);
 
     return color;
 }

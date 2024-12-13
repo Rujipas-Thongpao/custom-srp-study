@@ -90,21 +90,15 @@ public partial class PostFXStack
 
     public void Render(int _sourceId)
     {
-        /*buffer.Blit(_sourceId, BuiltinRenderTextureType.CameraTarget);*/
-        /*Draw(_sourceId, BuiltinRenderTextureType.CameraTarget, Pass.copy);*/
         DoBloom(_sourceId);
-
-        if (DoBloom(_sourceId))
-        {
-            DoToneMapping(bloomResultId);
-            buffer.ReleaseTemporaryRT(bloomResultId);
-        }
-        else
-        {
-            DoToneMapping(_sourceId);
-        }
+        DoToneMapping(bloomResultId);
         context.ExecuteCommandBuffer(buffer);
         buffer.Clear();
+        buffer.ReleaseTemporaryRT(bloomResultId);
+    }
+
+    void DoChromaticAbberation(int _sourceId)
+    {
 
     }
 
@@ -343,5 +337,5 @@ public partial class PostFXStack
 
 public enum Pass
 {
-    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ColorGradingNone, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard, Final
+    copy, BloomHorizontal, BloomVertical, BloomAdd, Prefilter, PrefilterFireflies, BloomScatter, BloomScatterFinal, ColorGradingNone, ToneMappingACES, ToneMappingNeutral, ToneMappingReinhard, Final,
 }

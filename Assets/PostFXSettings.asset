@@ -13,6 +13,11 @@ MonoBehaviour:
   m_Name: PostFXSettings
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: cbc99255fe86b594abc92295a73fe9c5, type: 3}
+  vignetting: 0
+  chromaticAbberation:
+    RedChannelOffset: {x: 0, y: 0}
+    GreenChannelOffset: {x: 0, y: 0}
+    BlueChannelOffset: {x: 0, y: 0}
   bloom:
     maxIterations: 3
     downscaleLimit: 1
@@ -42,9 +47,9 @@ MonoBehaviour:
     green: {x: 0, y: 1, z: 0}
     blue: {x: 0, y: 0, z: 1}
   smh:
-    shadows: {r: 0.3254717, g: 0.6690191, b: 1, a: 1}
-    midtones: {r: 1, g: 0.8915094, b: 0.8948684, a: 1}
-    highlights: {r: 1, g: 0.92819554, b: 0.8352941, a: 1}
+    shadows: {r: 0.9669811, g: 0.9763953, b: 1, a: 1}
+    midtones: {r: 1, g: 0.740566, b: 0.7498315, a: 1}
+    highlights: {r: 1, g: 1, b: 1, a: 1}
     shadowsStart: 0.08
     shadowsEnd: 0.25
     highlightsStart: 0.6

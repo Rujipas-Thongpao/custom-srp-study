@@ -9,6 +9,8 @@ public class PostFXSettings : ScriptableObject
 
     [SerializeField] Shader shader;
     [System.NonSerialized] Material material;
+    [SerializeField] bool vignetting;
+    [SerializeField] ChromaticAbberationSettings chromaticAbberation = default;
     [SerializeField] BloomSettings bloom = default;
     [SerializeField] ToneMappingSettings toneMapping = default;
     [SerializeField]
@@ -45,6 +47,8 @@ public class PostFXSettings : ScriptableObject
         highlightsEnd = 1f
     };
 
+    [SerializeField]
+
 
 
     public Material Material
@@ -61,6 +65,7 @@ public class PostFXSettings : ScriptableObject
     }
 
     public BloomSettings Bloom => bloom;
+    public ChromaticAbberationSettings ChromaticAbberation => chromaticAbberation;
     public ToneMappingSettings ToneMapping => toneMapping;
     public ColorAdjustmentsSettings ColorAdjustments => colorAdjustments;
     public WhiteBalanceSettings Whitebalance => whiteBalance;
@@ -151,6 +156,14 @@ public class PostFXSettings : ScriptableObject
 
         [Range(0f, 2f)]
         public float shadowsStart, shadowsEnd, highlightsStart, highlightsEnd;
+    }
+
+    [System.Serializable]
+    public struct ChromaticAbberationSettings
+    {
+        public Vector2 RedChannelOffset,
+        GreenChannelOffset,
+        BlueChannelOffset;
     }
 }
 
